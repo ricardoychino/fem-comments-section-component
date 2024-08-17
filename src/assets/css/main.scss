@@ -49,6 +49,9 @@ button {
   &.primary {
     @include btn-theme($color: "primary");
   }
+  &.primary-inverse {
+    @include btn-theme($color: "primary-inverse");
+  }
   &.danger {
     @include btn-theme($color: "danger");
   }
