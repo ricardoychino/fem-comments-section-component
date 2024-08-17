@@ -48,36 +48,31 @@ const userInfo: User = {
 
 <style lang="scss" scoped>
 .reply-form {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
   gap: 20px;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  grid-template-areas:
+    'textarea textarea'
+    'avatar button';
 
   .user-picture {
-    order: 2;
+    grid-area: avatar;
   }
 
   .text-field {
-    flex: 1 0 100%;
+    grid-area: textarea;
+    place-self: stretch;
   }
 
   button[type='submit'] {
-    order: 3;
+    grid-area: button;
+    align-self: start;
   }
 
   @media screen and (min-width: $bp-medium) {
-    flex-wrap: nowrap;
-
-    .user-picture {
-      order: 1;
-    }
-    .text-field {
-      order: 2;
-      flex-basis: 0;
-    }
-    button[type='submit'] {
-      align-self: flex-start;
-    }
+    grid-template-columns: min-content auto min-content;
+    grid-template-areas: 'avatar textarea button';
   }
 }
 </style>
