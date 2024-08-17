@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import AutoHeightTextArea from '@/components/AutoHeightTextArea.vue'
 
+import type { User } from '@/types/Comments'
+
 withDefaults(
   defineProps<{
     submitButtonText?: string
@@ -16,13 +18,21 @@ defineEmits<{
 }>()
 
 const message = ref<string>('')
+
+const userInfo: User = {
+  username: 'juliusomo',
+  image: {
+    png: './images/avatars/image-juliusomo.png',
+    webp: './images/avatars/image-juliusomo.webp'
+  }
+}
 </script>
 
 <template>
   <div class="card">
     <form class="reply-form" @submit.prevent="$emit('submitted', message)">
       <figure class="user-picture">
-        <img src="/images/avatars/image-juliusomo.png" alt="user photo" />
+        <img :src="userInfo.image.png" :alt="`${userInfo.username} avatar`" />
       </figure>
 
       <AutoHeightTextArea
