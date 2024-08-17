@@ -3,20 +3,22 @@ import UserAvatar from '@/components/UserAvatar.vue'
 
 import type { User } from '@/types/Comments'
 
-const userInfo: User = {
-  username: 'juliusomo',
-  image: {
-    png: './images/avatars/image-juliusomo.png',
-    webp: './images/avatars/image-juliusomo.webp'
+withDefaults(
+  defineProps<{
+    user: User
+    isSelf?: boolean
+  }>(),
+  {
+    isSelf: false
   }
-}
+)
 </script>
 
 <template>
   <div class="comment-details">
-    <UserAvatar size="36px" :url="userInfo.image.png" :username="userInfo.username" />
+    <UserAvatar size="36px" :url="user.image.png" :username="user.username" />
 
-    <h4 class="username">{{ userInfo.username }} <span class="self-badge">you</span></h4>
+    <h4 class="username">{{ user.username }} <span class="self-badge" v-if="isSelf">you</span></h4>
 
     <time class="time">1 month ago</time>
   </div>
@@ -26,7 +28,7 @@ const userInfo: User = {
 .comment-details {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
 
   .username {
     font-weight: 600;
@@ -47,6 +49,15 @@ const userInfo: User = {
     opacity: 0.5;
     font-size: 0.875em;
     font-weight: 500;
+    margin-left: auto;
+
+    @media screen and (min-width: $bp-medium) {
+      margin-left: unset;
+    }
+  }
+
+  @media screen and (min-width: $bp-medium) {
+    gap: 20px;
   }
 }
 </style>
