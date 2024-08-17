@@ -11,12 +11,16 @@ withDefaults(
   }
 )
 
-const message = ref<string>()
+defineEmits<{
+  submitted: [message: string]
+}>()
+
+const message = ref<string>('')
 </script>
 
 <template>
   <div class="card">
-    <form class="reply-form" @submit.prevent="">
+    <form class="reply-form" @submit.prevent="$emit('submitted', message)">
       <figure class="user-picture">
         <img src="/images/avatars/image-juliusomo.png" alt="user photo" />
       </figure>
