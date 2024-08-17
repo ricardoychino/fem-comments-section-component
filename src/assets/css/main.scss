@@ -15,6 +15,10 @@
   color: $neutral-000;
   background-color: map.get($theme-colors, $color);
 
+  svg {
+    fill: $neutral-000;
+  }
+
   &:hover {
     background-color: map.get($theme-colors-soft, $color)
   }
@@ -26,9 +30,17 @@
     font-weight: 600;
     padding: 5px 10px;
 
+    svg {
+      fill: map.get($theme-colors, $color);
+    }
+
     &:hover {
       // background-color: #{$color}33;
       color: map.get($theme-colors-soft, $color);
+
+      svg {
+        fill: map.get($theme-colors-soft, $color);
+      }
     }
   }
 }
@@ -40,6 +52,10 @@ button {
     font-weight: 400;
     letter-spacing: 1px;
     padding: 7.5px 20px;
+    transition: all 0.3s linear;
+  }
+  svg {
+    transition: fill 0.3s linear;
   }
 
   &:hover {

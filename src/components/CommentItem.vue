@@ -2,6 +2,7 @@
 import CommentItemHeader from '@/components/CommentItemHeader.vue'
 import CommentItemRatings from '@/components/CommentItemRatings.vue'
 import CommentItemReplies from '@/components/CommentItemReplies.vue'
+import ButtonIcon from '@/components/ButtonIcon.vue'
 
 import type { Comment } from '@/types/Comments'
 
@@ -28,9 +29,9 @@ withDefaults(
       </div>
 
       <div class="comment-actions">
-        <button class="danger flat-btn" v-if="isSelf">Delete</button>
-        <button class="primary flat-btn" v-if="isSelf">Edit</button>
-        <button class="primary flat-btn" v-if="!isSelf">Reply</button>
+        <button class="danger flat-btn" v-if="isSelf"><ButtonIcon type="delete" />Delete</button>
+        <button class="primary flat-btn" v-if="isSelf"><ButtonIcon type="edit" />Edit</button>
+        <button class="primary flat-btn" v-if="!isSelf"><ButtonIcon type="reply" />Reply</button>
       </div>
     </div>
     <CommentItemReplies v-if="data.replies">

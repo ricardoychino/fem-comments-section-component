@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ButtonIcon from '@/components/ButtonIcon.vue'
+
 const props = withDefaults(
   defineProps<{
     rating: number
@@ -31,11 +33,11 @@ const handleMinusClick = () => {
 <template>
   <div class="rating-wrapper">
     <button class="primary-inverse flat-btn" :disabled="disabled" @click="handlePlusClick">
-      &plus;
+      <ButtonIcon type="plus" />
     </button>
     <span class="counter">{{ rating }}</span>
     <button class="primary-inverse flat-btn" :disabled="disabled" @click="handleMinusClick">
-      &minus;
+      <ButtonIcon type="minus" />
     </button>
   </div>
 </template>

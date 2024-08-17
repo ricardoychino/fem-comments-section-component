@@ -10,9 +10,13 @@
 
 body {
   font-family: 'Rubik', sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   color: $neutral-900;
   background-color: $neutral-100;
+
+  @media screen and (min-width: $bp-medium) {
+    font-size: 16px;
+  }
 }
 
 a {
@@ -20,6 +24,9 @@ a {
 }
 
 button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-family: inherit;
   font-size: 1.0625rem;
   border-color: transparent;
@@ -28,5 +35,4 @@ button {
 
 a, button {
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
 }
