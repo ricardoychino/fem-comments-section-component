@@ -37,13 +37,15 @@ textarea {
   font-size: initial;
   width: 100%;
   overflow: hidden;
-  border: 1px solid $neutral-900;
+  border: 1px solid $neutral-400;
   border-radius: 10px;
   padding: 10px 20px;
 
   &:focus,
+  &:focus-within,
   &:focus-visible {
     border-color: $color-primary;
+    outline-color: $color-primary;
   }
 }
 </style>
