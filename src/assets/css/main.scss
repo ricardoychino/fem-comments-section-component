@@ -1,5 +1,15 @@
 @import './base.scss';
 
+
+/* Card */
+.card {
+  background-color: $neutral-000;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 1px 10px -5px $neutral-400;
+}
+
+
 /* Button colors */
 @mixin btn-theme($color: "neutral") {
   color: $neutral-000;
