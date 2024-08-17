@@ -1,1 +1,40 @@
 @import './base.scss';
+
+/* Button colors */
+@mixin btn-theme($color: $neutral-900) {
+  color: $neutral-000;
+  background-color: $color;
+
+  &.flat-btn {
+    color: $color;
+    background-color: transparent;
+    text-transform: unset;
+    font-weight: 600;
+    padding: 5px 10px;
+
+    &:hover {
+      background-color: #{$color}33;
+    }
+  }
+}
+button {
+  @include btn-theme;
+
+  & {
+    text-transform: uppercase;
+    font-weight: 400;
+    letter-spacing: 1px;
+    padding: 7.5px 20px;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &.primary {
+    @include btn-theme($color: $color-primary);
+  }
+  &.danger {
+    @include btn-theme($color: $color-danger);
+  }
+}
