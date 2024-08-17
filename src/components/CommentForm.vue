@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import AutoHeightTextArea from '@/components/AutoHeightTextArea.vue'
 
 import type { User } from '@/types/Comments'
@@ -31,9 +32,7 @@ const userInfo: User = {
 <template>
   <div class="card">
     <form class="reply-form" @submit.prevent="$emit('submitted', message)">
-      <figure class="user-picture">
-        <img :src="userInfo.image.png" :alt="`${userInfo.username} avatar`" />
-      </figure>
+      <UserAvatar class="user-picture" :url="userInfo.image.png" :username="userInfo.username" />
 
       <AutoHeightTextArea
         class="text-field"
@@ -56,17 +55,6 @@ const userInfo: User = {
 
   .user-picture {
     order: 2;
-    height: 40px;
-    width: 40px;
-    overflow: hidden;
-    border-radius: 50%;
-
-    img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: cover;
-      object-position: center;
-    }
   }
 
   .text-field {
