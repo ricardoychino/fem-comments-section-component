@@ -1,19 +1,24 @@
 @import './base.scss';
 
 /* Button colors */
-@mixin btn-theme($color: $neutral-900) {
+@mixin btn-theme($color: "neutral") {
   color: $neutral-000;
-  background-color: $color;
+  background-color: map.get($theme-colors, $color);
+
+  &:hover {
+    background-color: map.get($theme-colors-soft, $color)
+  }
 
   &.flat-btn {
-    color: $color;
+    color: map.get($theme-colors, $color);
     background-color: transparent;
     text-transform: unset;
     font-weight: 600;
     padding: 5px 10px;
 
     &:hover {
-      background-color: #{$color}33;
+      // background-color: #{$color}33;
+      color: map.get($theme-colors-soft, $color);
     }
   }
 }
@@ -32,9 +37,9 @@ button {
   }
 
   &.primary {
-    @include btn-theme($color: $color-primary);
+    @include btn-theme($color: "primary");
   }
   &.danger {
-    @include btn-theme($color: $color-danger);
+    @include btn-theme($color: "danger");
   }
 }

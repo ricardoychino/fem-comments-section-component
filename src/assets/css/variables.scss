@@ -25,7 +25,16 @@ $neutral-400: #eaecf1;
 $neutral-100: #f5f6fa;
 $neutral-000: #FFFFFF;
 
-
+$theme-colors: (
+  "neutral": $neutral-900,
+  "primary": $color-primary,
+  "danger": $color-danger
+);
+$theme-colors-soft: (
+  "neutral": $neutral-700,
+  "primary": $color-primary-soft,
+  "danger": $color-danger-soft
+);
 
 
 
