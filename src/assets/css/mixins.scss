@@ -15,3 +15,43 @@
     @content;
   }
 }
+
+@mixin vue-transition($name) {
+  /*
+    Use with this format:
+
+    @include vue-transition('name') {
+      %active { ... }         // CSS for when visible
+      %inactive { ... }       // CSS for when hidden
+      %transition-in { ... }  // CSS transition when becoming visible
+      %transition-out { ... } // CSS transition when becoming hidden
+    }
+  */
+  @content;
+
+  .#{$name} {
+
+    &-enter {
+      &-from {
+        @extend %state-inactive;
+      }
+      &-active {
+        @extend %state-transition-in;
+      }
+      &-to {
+        @extend %state-active;
+      }
+    }
+    &-leave {
+      &-from {
+        @extend %state-active;
+      }
+      &-active {
+        @extend %state-transition-out;
+      }
+      &-to {
+        @extend %state-inactive;
+      }
+    }
+  }
+}

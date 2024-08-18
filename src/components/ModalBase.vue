@@ -101,50 +101,20 @@ const handleCloseBtn = () => {
   }
 }
 
-.transition {
-  &-inactive {
-    opacity: 0;
-  }
-  &-active {
+@include vue-transition('modal') {
+  %state-active {
     opacity: 1;
   }
-  &-style {
+  %state-inactive {
+    opacity: 0;
+
+    .modal-dialog {
+      transform: translateY(-40px);
+    }
+  }
+  %state-transition-in,
+  %state-transition-out {
     transition: all 0.2s linear;
-  }
-  &-dialog {
-    transform: translateY(-40px);
-  }
-}
-.modal {
-  &-enter {
-    &-to {
-      @extend .transition-active;
-    }
-    &-active {
-      @extend .transition-style;
-    }
-    &-from {
-      @extend .transition-inactive;
-
-      .modal-dialog {
-        @extend .transition-dialog;
-      }
-    }
-  }
-  &-leave {
-    &-to {
-      @extend .transition-inactive;
-
-      .modal-dialog {
-        @extend .transition-dialog;
-      }
-    }
-    &-active {
-      @extend .transition-style;
-    }
-    &-from {
-      @extend .transition-active;
-    }
   }
 }
 </style>
