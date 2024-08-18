@@ -9,15 +9,18 @@ const props = withDefaults(
   defineProps<{
     value?: string
     submitButtonText?: string
+    showCancelButton?: boolean
   }>(),
   {
     value: '',
-    submitButtonText: 'Send'
+    submitButtonText: 'Send',
+    showCancelButton: false
   }
 )
 
 defineEmits<{
   submitted: [message: string]
+  cancel: []
 }>()
 
 const message = ref<string>(props.value)
@@ -32,20 +35,27 @@ const userInfo: User = {
 </script>
 
 <template>
-  <div class="card">
-    <form class="new-comment-form" @submit.prevent="$emit('submitted', message)">
-      <UserAvatar class="user-picture" :url="userInfo.image.png" :username="userInfo.username" />
+  <form class="new-comment-form" @submit.prevent="$emit('submitted', message)">
+    <UserAvatar class="user-picture" :url="userInfo.image.png" :username="userInfo.username" />
 
-      <AutoHeightTextArea
-        class="text-field"
-        placeholder="Add a comment..."
-        rows="4"
-        v-model="message"
-      />
-
+    <AutoHeightTextArea
+      class="text-field"
+      placeholder="Add a comment..."
+      rows="4"
+      v-model="message"
+    />
+    <div class="form-actions">
       <button type="submit" class="primary">{{ submitButtonText }}</button>
-    </form>
-  </div>
+      <button
+        v-if="showCancelButton"
+        type="button"
+        class="neutral flat-btn"
+        @click="$emit('cancel')"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
 </template>
 
 <style lang="scss" scoped>
@@ -67,9 +77,16 @@ const userInfo: User = {
     place-self: stretch;
   }
 
-  button[type='submit'] {
+  .form-actions {
     grid-area: button;
     align-self: start;
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 10px;
+
+    @media screen and (min-width: $bp-medium) {
+      flex-direction: column;
+    }
   }
 
   @media screen and (min-width: $bp-medium) {

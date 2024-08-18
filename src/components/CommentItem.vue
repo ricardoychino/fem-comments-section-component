@@ -46,7 +46,9 @@ const isReplying = ref<boolean>(false)
       </div>
     </div>
 
-    <CommentFormNew class="reply-form" v-if="isReplying" />
+    <div class="card reply-form" v-if="isReplying">
+      <CommentFormNew :showCancelButton="true" @cancel="isReplying = false" />
+    </div>
 
     <CommentItemReplies v-if="data.replies">
       <CommentItem
