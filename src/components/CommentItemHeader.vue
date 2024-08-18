@@ -51,12 +51,12 @@ withDefaults(
     font-weight: 500;
     margin-left: auto;
 
-    @media screen and (min-width: $bp-medium) {
+    @include medium-screen {
       margin-left: unset;
     }
   }
 
-  @media screen and (min-width: $bp-medium) {
+  @include medium-screen {
     gap: 20px;
   }
 }

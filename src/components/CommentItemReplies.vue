@@ -11,7 +11,7 @@
   border-left: 2px solid $neutral-400;
   padding-left: 5%;
 
-  @media screen and (min-width: $bp-medium) {
+  @include medium-screen {
     margin-left: 35px;
     padding-left: 35px;
   }

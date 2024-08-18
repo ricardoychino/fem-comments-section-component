@@ -14,7 +14,7 @@ body {
   color: $neutral-900;
   background-color: $neutral-100;
 
-  @media screen and (min-width: $bp-medium) {
+  @include medium-screen {
     font-size: 16px;
   }
 }

@@ -63,7 +63,7 @@ const handleMinusClick = () => {
 
     font-weight: 500;
     min-height: 30px;
-    @media screen and (min-width: $bp-medium) {
+    @include medium-screen {
       min-width: 42px;
     }
   }
@@ -77,7 +77,7 @@ const handleMinusClick = () => {
     min-height: 30px;
   }
 
-  @media screen and (min-width: $bp-medium) {
+  @include medium-screen {
     flex-direction: column;
   }
 }

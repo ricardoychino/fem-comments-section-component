@@ -13,7 +13,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@use 'sass:map';@import '@/assets/css/variables.scss';`
+        additionalData: `@use 'sass:map';@import '@/assets/css/variables.scss';@import '@/assets/css/mixins.scss';`
       }
     }
   },

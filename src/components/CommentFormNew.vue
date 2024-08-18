@@ -84,12 +84,12 @@ const userInfo: User = {
     flex-direction: row-reverse;
     gap: 10px;
 
-    @media screen and (min-width: $bp-medium) {
+    @include medium-screen {
       flex-direction: column;
     }
   }
 
-  @media screen and (min-width: $bp-medium) {
+  @include medium-screen {
     grid-template-columns: min-content auto min-content;
     grid-template-areas: 'avatar textarea button';
   }

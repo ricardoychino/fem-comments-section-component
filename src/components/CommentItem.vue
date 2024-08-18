@@ -95,7 +95,7 @@ const isReplying = ref<boolean>(false)
     }
   }
 
-  @media screen and (min-width: $bp-medium) {
+  @include medium-screen {
     grid-template-columns: 40px auto min-content;
     grid-template-areas:
       'rating heading heading actions'
