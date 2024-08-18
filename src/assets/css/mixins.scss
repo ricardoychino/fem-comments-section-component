@@ -17,40 +17,40 @@
 }
 
 @mixin vue-transition($name) {
+
+  .#{$name} {
   /*
     Use with this format:
 
     @include vue-transition('name') {
-      %active { ... }         // CSS for when visible
-      %inactive { ... }       // CSS for when hidden
-      %transition-in { ... }  // CSS transition when becoming visible
-      %transition-out { ... } // CSS transition when becoming hidden
+      &__active { ... }         // CSS for when visible
+      &__inactive { ... }       // CSS for when hidden
+      &__transition-in { ... }  // CSS transition when becoming visible
+      &__transition-out { ... } // CSS transition when becoming hidden
     }
   */
   @content;
 
-  .#{$name} {
-
     &-enter {
       &-from {
-        @extend %state-inactive;
+        @extend .#{$name}__inactive;
       }
       &-active {
-        @extend %state-transition-in;
+        @extend .#{$name}__transition-in;
       }
       &-to {
-        @extend %state-active;
+        @extend .#{$name}__active;
       }
     }
     &-leave {
       &-from {
-        @extend %state-active;
+        @extend .#{$name}__active;
       }
       &-active {
-        @extend %state-transition-out;
+        @extend .#{$name}__transition-out;
       }
       &-to {
-        @extend %state-inactive;
+        @extend .#{$name}__inactive;
       }
     }
   }

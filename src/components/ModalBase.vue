@@ -102,18 +102,18 @@ const handleCloseBtn = () => {
 }
 
 @include vue-transition('modal') {
-  %state-active {
+  &__active {
     opacity: 1;
   }
-  %state-inactive {
+  &__inactive {
     opacity: 0;
 
     .modal-dialog {
       transform: translateY(-40px);
     }
   }
-  %state-transition-in,
-  %state-transition-out {
+  &__transition-in,
+  &__transition-out {
     transition: all 0.2s linear;
   }
 }

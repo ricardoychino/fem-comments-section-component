@@ -1,0 +1,19 @@
+
+
+@include vue-transition('slide-up') {
+  &__active {
+    opacity: 1;
+  }
+  &__inactive {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  &__transition-in {
+    transition: opacity 0.1s linear 0.1s,
+                transform 0.2s linear;
+  }
+  &__transition-out {
+    transition: opacity 0.1s linear,
+                transform 0.2s linear;
+  }
+}
