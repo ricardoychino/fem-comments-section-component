@@ -3,6 +3,9 @@ import { ref } from 'vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import AutoHeightTextArea from '@/components/AutoHeightTextArea.vue'
 
+import { useLoggedUserStore } from '@/stores/loggedUser'
+import { storeToRefs } from 'pinia'
+
 import type { User } from '@/types/Comments'
 
 const props = withDefaults(
@@ -25,18 +28,17 @@ defineEmits<{
 
 const message = ref<string>(props.value)
 
-const userInfo: User = {
-  username: 'juliusomo',
-  image: {
-    png: './images/avatars/image-juliusomo.png',
-    webp: './images/avatars/image-juliusomo.webp'
-  }
-}
+const store = useLoggedUserStore()
+const { loggedUser: userInfo } = storeToRefs(store)
 </script>
 
 <template>
   <form class="new-comment-form" @submit.prevent="$emit('submitted', message)">
-    <UserAvatar class="user-picture" :url="userInfo.image.png" :username="userInfo.username" />
+    <UserAvatar
+      class="user-picture"
+      :url="userInfo?.image.png || ''"
+      :username="userInfo?.username"
+    />
 
     <AutoHeightTextArea
       class="text-field"

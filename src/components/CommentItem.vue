@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import CommentItemHeader from '@/components/CommentItemHeader.vue'
 import CommentItemRatings from '@/components/CommentItemRatings.vue'
 import CommentItemReplies from '@/components/CommentItemReplies.vue'
@@ -7,20 +7,22 @@ import CommentFormNew from '@/components/CommentFormNew.vue'
 import CommentFormEdit from '@/components/CommentFormEdit.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 
+import { useLoggedUserStore } from '@/stores/loggedUser'
+import { storeToRefs } from 'pinia'
+
 import type { Comment } from '@/types/Comments'
 
-const props = withDefaults(
-  defineProps<{
-    data: Comment
-    isSelf?: boolean
-  }>(),
-  {
-    isSelf: false
-  }
-)
+const props = defineProps<{
+  data: Comment
+}>()
 
 const isEditing = ref<boolean>(false)
 const isReplying = ref<boolean>(false)
+
+const store = useLoggedUserStore()
+const { loggedUser } = storeToRefs(store)
+
+const isSelf = computed(() => props.data.user.username === loggedUser.value?.username)
 </script>
 
 <template>
@@ -53,12 +55,7 @@ const isReplying = ref<boolean>(false)
     </Transition>
 
     <CommentItemReplies v-if="data.replies">
-      <CommentItem
-        v-for="comment in data.replies"
-        :data="comment"
-        :isSelf="comment.user.username === 'juliusomo'"
-        :key="comment.id"
-      />
+      <CommentItem v-for="comment in data.replies" :data="comment" :key="comment.id" />
     </CommentItemReplies>
   </div>
 </template>

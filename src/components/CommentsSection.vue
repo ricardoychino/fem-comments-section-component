@@ -80,12 +80,7 @@ const handleSubmit = (value: string) => {
 <template>
   <div class="comments-section">
     <div class="comments-list">
-      <CommentItem
-        v-for="comment in comments"
-        :data="comment"
-        :isSelf="comment.user.username === 'juliusomo'"
-        :key="comment.id"
-      />
+      <CommentItem v-for="comment in comments" :data="comment" :key="comment.id" />
     </div>
 
     <div class="card">
