@@ -2,8 +2,6 @@
 import { ref } from 'vue'
 import AutoHeightTextArea from '@/components/AutoHeightTextArea.vue'
 
-import type { User } from '@/types/Comments'
-
 const props = withDefaults(
   defineProps<{
     value?: string
