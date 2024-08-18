@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import CommentItem from '@/components/CommentItem.vue'
 import CommentFormNew from '@/components/CommentFormNew.vue'
+import DeleteCommentModal from '@/components/DeleteCommentModal.vue'
 
 import type { Comment } from '@/types/Comments'
 
@@ -68,6 +70,8 @@ const comments: Comment[] = [
   }
 ]
 
+const modalOpen = ref<boolean>(false)
+
 const handleSubmit = (value: string) => {
   console.log(value)
 }
@@ -87,5 +91,7 @@ const handleSubmit = (value: string) => {
     <div class="card">
       <CommentFormNew @submitted="handleSubmit" />
     </div>
+
+    <DeleteCommentModal v-model="modalOpen" />
   </div>
 </template>
