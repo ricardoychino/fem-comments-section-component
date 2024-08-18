@@ -1,6 +1,7 @@
 import initial from '@/mock/comments.json'
-import { computed, ref, type Ref } from 'vue'
+import { computed, ref } from 'vue'
 
+import type { Ref, ComputedGetter } from 'vue'
 import type { Comment } from '@/types/Comments'
 
 type StorageComment = Map<number, Comment>    // ID - Comment
@@ -12,6 +13,18 @@ type Storage = {
   comments: Ref<StorageComment>,
   replies: Ref<StorageReplies>,
   votes: Ref<StorageVotes>,
+}
+
+interface CastVoteArgs {
+  commentId: number,
+  user: string,
+  type: 'sum' | 'sub'
+}
+type CastVoteFn = (arg0: CastVoteArgs) => void
+
+interface Exports {
+  response: ComputedGetter<Comment[]>,
+  castVote: (arg0: castVoteArgs) => void
 }
 
 
@@ -39,6 +52,7 @@ export const useFakeBackend = () => {
   const storageVotes = ref<StorageVotes>(new Set())
   const responseList = ref<number[]>([])
 
+  // State
   const storage = {
     list: responseList,
     comments: storageComment,
@@ -46,6 +60,7 @@ export const useFakeBackend = () => {
     votes: storageVotes
   }
 
+  // Getter
   const response = computed(() => {
     const res: Comment[] = []
 
@@ -62,15 +77,13 @@ export const useFakeBackend = () => {
     return res
   })
 
-
-
+  // Actions - local
   const updateLocalStorage = () => {
     localStorage.setItem('list-data', JSON.stringify([...storage.list.value]))
     localStorage.setItem('comments-data', JSON.stringify([...storage.comments.value.entries()]))
     localStorage.setItem('replies-data', JSON.stringify([...storage.replies.value.entries()]))
     localStorage.setItem('votes-data', JSON.stringify([...storage.votes.value]))
   }
-
   const initialize = () => {
     const fromLocalStorage = {
       list: localStorage.getItem('list-data'),
@@ -90,7 +103,27 @@ export const useFakeBackend = () => {
     }
   }
 
+  // Actions - perform mutations
+  const castVote: CastVoteFn = ({commentId, user, type}) => {
+    const identifier = `${user}-${commentId}`
+
+    // Do not allow to vote more than once
+    if (storage.votes.value.has(identifier)) return;
+
+    const entry = storage.comments.value.get(commentId)
+
+    // Check if the comment is from the same user
+    if (entry?.user.username === user) return;
+
+    entry!.score += (type == 'sum' ? 1 : -1)
+    storage.votes.value.add(identifier)
+
+    updateLocalStorage()
+  }
+
+
+  // Setup
   initialize()
 
-  return { response }
+  return { response, castVote }
 }

@@ -8,6 +8,7 @@ import CommentFormEdit from '@/components/CommentFormEdit.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 
 import { useLoggedUserStore } from '@/stores/loggedUser'
+import { useCommentsStore } from '@/stores/comments'
 import { storeToRefs } from 'pinia'
 
 import type { Comment } from '@/types/Comments'
@@ -19,8 +20,10 @@ const props = defineProps<{
 const isEditing = ref<boolean>(false)
 const isReplying = ref<boolean>(false)
 
-const store = useLoggedUserStore()
-const { loggedUser } = storeToRefs(store)
+const userStore = useLoggedUserStore()
+const { loggedUser } = storeToRefs(userStore)
+
+const { upvoteComment, downvoteComment } = useCommentsStore()
 
 const isSelf = computed(() => props.data.user.username === loggedUser.value?.username)
 </script>
@@ -30,7 +33,12 @@ const isSelf = computed(() => props.data.user.username === loggedUser.value?.use
     <div class="card comment-container" :class="{ 'is-editing': isEditing }">
       <CommentItemHeader class="comment-header" :user="data.user" v-bind:isSelf />
 
-      <CommentItemRatings class="comment-rating" :rating="data.score" />
+      <CommentItemRatings
+        class="comment-rating"
+        :rating="data.score"
+        @increase="() => upvoteComment(data.id)"
+        @decrease="() => downvoteComment(data.id)"
+      />
 
       <div class="comment-body">
         <p v-if="!isEditing">{{ data.content }}</p>
