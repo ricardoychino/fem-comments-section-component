@@ -24,27 +24,29 @@ const handleCloseBtn = () => {
 
 <template>
   <Teleport to="body">
-    <div class="modal-wrapper" v-show="isOpen">
-      <div class="modal-layer"></div>
+    <Transition name="modal">
+      <div class="modal-wrapper" v-show="isOpen">
+        <div class="modal-layer"></div>
 
-      <div class="modal-dialog card">
-        <div class="modal-header">
-          <slot name="header">
-            <h3>Title</h3>
-          </slot>
+        <div class="modal-dialog card">
+          <div class="modal-header">
+            <slot name="header">
+              <h3>Title</h3>
+            </slot>
 
-          <button v-if="!hideCloseBtn" class="close-btn neutral flat-btn" @click="handleCloseBtn">
-            <ButtonIcon type="close" />
-          </button>
-        </div>
-        <div class="modal-body">
-          <slot></slot>
-        </div>
-        <div class="modal-footer">
-          <slot name="footer"></slot>
+            <button v-if="!hideCloseBtn" class="close-btn neutral flat-btn" @click="handleCloseBtn">
+              <ButtonIcon type="close" />
+            </button>
+          </div>
+          <div class="modal-body">
+            <slot></slot>
+          </div>
+          <div class="modal-footer">
+            <slot name="footer"></slot>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
@@ -73,6 +75,7 @@ const handleCloseBtn = () => {
     width: 400px;
     max-width: 100%;
     padding: 20px;
+    transition: inherit;
 
     .modal-header {
       position: relative;
@@ -94,6 +97,53 @@ const handleCloseBtn = () => {
     }
     .modal-body {
       margin-bottom: 20px;
+    }
+  }
+}
+
+.transition {
+  &-inactive {
+    opacity: 0;
+  }
+  &-active {
+    opacity: 1;
+  }
+  &-style {
+    transition: all 0.2s linear;
+  }
+  &-dialog {
+    transform: translateY(-40px);
+  }
+}
+.modal {
+  &-enter {
+    &-to {
+      @extend .transition-active;
+    }
+    &-active {
+      @extend .transition-style;
+    }
+    &-from {
+      @extend .transition-inactive;
+
+      .modal-dialog {
+        @extend .transition-dialog;
+      }
+    }
+  }
+  &-leave {
+    &-to {
+      @extend .transition-inactive;
+
+      .modal-dialog {
+        @extend .transition-dialog;
+      }
+    }
+    &-active {
+      @extend .transition-style;
+    }
+    &-from {
+      @extend .transition-active;
     }
   }
 }
