@@ -34,7 +34,7 @@ onMounted(adjustSize)
 <style lang="scss" scoped>
 textarea {
   font-family: inherit;
-  font-size: initial;
+  font-size: inherit;
   width: 100%;
   overflow: hidden;
   border: 1px solid $neutral-400;

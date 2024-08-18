@@ -5,11 +5,13 @@ import AutoHeightTextArea from '@/components/AutoHeightTextArea.vue'
 
 import type { User } from '@/types/Comments'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
+    value?: string
     submitButtonText?: string
   }>(),
   {
+    value: '',
     submitButtonText: 'Send'
   }
 )
@@ -18,7 +20,7 @@ defineEmits<{
   submitted: [message: string]
 }>()
 
-const message = ref<string>('')
+const message = ref<string>(props.value)
 
 const userInfo: User = {
   username: 'juliusomo',
@@ -31,7 +33,7 @@ const userInfo: User = {
 
 <template>
   <div class="card">
-    <form class="reply-form" @submit.prevent="$emit('submitted', message)">
+    <form class="new-comment-form" @submit.prevent="$emit('submitted', message)">
       <UserAvatar class="user-picture" :url="userInfo.image.png" :username="userInfo.username" />
 
       <AutoHeightTextArea
@@ -47,7 +49,7 @@ const userInfo: User = {
 </template>
 
 <style lang="scss" scoped>
-.reply-form {
+.new-comment-form {
   display: grid;
   gap: 20px;
   grid-template-columns: 1fr;

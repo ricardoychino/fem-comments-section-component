@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import CommentItemHeader from '@/components/CommentItemHeader.vue'
 import CommentItemRatings from '@/components/CommentItemRatings.vue'
 import CommentItemReplies from '@/components/CommentItemReplies.vue'
+import CommentFormNew from '@/components/CommentFormNew.vue'
+import CommentFormEdit from '@/components/CommentFormEdit.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 
 import type { Comment } from '@/types/Comments'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     data: Comment
     isSelf?: boolean
@@ -15,25 +18,36 @@ withDefaults(
     isSelf: false
   }
 )
+
+const isEditing = ref<boolean>(false)
+const isReplying = ref<boolean>(false)
 </script>
 
 <template>
   <div class="comment-item">
-    <div class="card comment-container">
+    <div class="card comment-container" :class="{ 'is-editing': isEditing }">
       <CommentItemHeader class="comment-header" :user="data.user" v-bind:isSelf />
 
       <CommentItemRatings class="comment-rating" :rating="data.score" />
 
       <div class="comment-body">
-        {{ data.content }}
+        <p v-if="!isEditing">{{ data.content }}</p>
+        <CommentFormEdit :value="data.content" v-else @cancel="isEditing = false" />
       </div>
 
       <div class="comment-actions">
         <button class="danger flat-btn" v-if="isSelf"><ButtonIcon type="delete" />Delete</button>
-        <button class="primary flat-btn" v-if="isSelf"><ButtonIcon type="edit" />Edit</button>
-        <button class="primary flat-btn" v-if="!isSelf"><ButtonIcon type="reply" />Reply</button>
+        <button class="primary flat-btn" v-if="isSelf" @click="isEditing = true">
+          <ButtonIcon type="edit" />Edit
+        </button>
+        <button class="primary flat-btn" v-if="!isSelf" @click="isReplying = true">
+          <ButtonIcon type="reply" />Reply
+        </button>
       </div>
     </div>
+
+    <CommentFormNew class="reply-form" v-if="isReplying" />
+
     <CommentItemReplies v-if="data.replies">
       <CommentItem
         v-for="comment in data.replies"
@@ -50,7 +64,6 @@ withDefaults(
   display: grid;
   grid-template-rows: auto;
   gap: 20px;
-  margin-bottom: 20px;
   grid-template-areas:
     'heading heading'
     'body body'
@@ -64,11 +77,20 @@ withDefaults(
   }
   .comment-rating {
     grid-area: rating;
-    justify-self: start;
+    place-self: start;
   }
   .comment-actions {
     grid-area: actions;
     justify-self: end;
+  }
+
+  &.is-editing {
+    @media screen and (max-width: $bp-medium - 1) {
+      .comment-rating,
+      .comment-actions {
+        display: none;
+      }
+    }
   }
 
   @media screen and (min-width: $bp-medium) {
@@ -77,5 +99,9 @@ withDefaults(
       'rating heading heading actions'
       'rating body body body';
   }
+}
+
+.reply-form {
+  margin-top: -15px;
 }
 </style>
