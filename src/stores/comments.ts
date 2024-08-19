@@ -1,6 +1,7 @@
 import { ref, computed, watch } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
 import { useLoggedUserStore } from './loggedUser'
+import { useTooltipsStore } from './tooltips'
 
 import type { Comment } from '@/types/Comments'
 import type { ApiResponse } from '@/types/Requests'
@@ -15,6 +16,10 @@ export const useCommentsStore = defineStore('comments', () => {
   // We need the current logged user to save the interactions
   const userStore = useLoggedUserStore()
   const { loggedUser: user } = storeToRefs(userStore)
+
+  const { append } = useTooltipsStore()
+  const appendSuccessTooltip = (text: string) => { append('success', text, { duration: 5000, closable: true }) }
+  const appendErrorTooltip = (text: string) => { append('danger', text, { duration: 5000, closable: true }) }
 
   // States
   const comments = ref<Comment[]>(response.value || [])
@@ -37,10 +42,13 @@ export const useCommentsStore = defineStore('comments', () => {
         comments.value.push(response.data)
         internalCache.value.set(response.data.id, response.data)
       }
+      appendSuccessTooltip(response.message)
 
       return response
     } catch (err) {
-      return (err instanceof Error ? err.message : err)
+      const errorMessage: string = (err instanceof Error ? err.message : '')
+
+      appendErrorTooltip(errorMessage)
     }
   }
   const upvoteComment = async (commentId: number): ApiResponse<undefined> => {
@@ -50,10 +58,13 @@ export const useCommentsStore = defineStore('comments', () => {
       }
 
       const response = await castVote({commentId, user: user.value.username, type: 'sum'})
+      appendSuccessTooltip(response.message)
 
       return response.message
     } catch (err) {
-      return (err instanceof Error ? err.message : err)
+      const errorMessage: string = (err instanceof Error ? err.message : '')
+
+      appendErrorTooltip(errorMessage)
     }
   }
   const downvoteComment = async (commentId: number): ApiResponse<undefined> => {
@@ -63,10 +74,13 @@ export const useCommentsStore = defineStore('comments', () => {
       }
 
       const response = await castVote({commentId, user: user.value.username, type: 'sub'})
+      appendSuccessTooltip(response.message)
 
       return response.message
     } catch (err) {
-      return (err instanceof Error ? err.message : err)
+      const errorMessage: string = (err instanceof Error ? err.message : '')
+
+      appendErrorTooltip(errorMessage)
     }
   }
 

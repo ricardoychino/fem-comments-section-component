@@ -14,7 +14,11 @@ export const useTooltipsStore = defineStore('tooltips', () => {
 
   const tooltips = computed(() => [...internalList.value])
 
-  const append = (theme: TooltipThemes = 'neutral', text: string, options: AppendFnOptions = { duration: 3000, closable: false }) => {
+  const append = (
+    theme: TooltipThemes = 'neutral',
+    text: string,
+    options: AppendFnOptions = { duration: 3000, closable: false }
+  ) => {
     const instance: Tooltip = {
       theme,
       text,

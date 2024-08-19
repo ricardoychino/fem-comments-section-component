@@ -129,10 +129,7 @@ export const useFakeBackend = () => {
           errorMessage = err.message
         }
 
-        reject({
-          status: 400,
-          message: errorMessage
-        })
+        reject(new Error(errorMessage))
       }
     })
   }
@@ -141,10 +138,10 @@ export const useFakeBackend = () => {
   const insertComment: InsertCommentFn = async ({ content, user }) => {
     return request<Comment>(() => {
       if (!user) {
-        throw new Error('author undefined')
+        throw new Error('Missing author')
       }
       if (!content || content === '') {
-        throw new Error('empty or invalid message')
+        throw new Error('Empty or invalid message')
       }
 
       const newRow: Comment = {
@@ -165,7 +162,7 @@ export const useFakeBackend = () => {
       return {
         status: 200,
         data: newRow,
-        message: `row ${newRow.id} added successfully`
+        message: `Comment #${newRow.id} added successfully!`
       }
     })
   }
@@ -174,12 +171,12 @@ export const useFakeBackend = () => {
       const identifier = `${user}-${commentId}`
 
       // Do not allow to vote more than once
-      if (storageVotes.value.has(identifier)) throw new Error('user already voted on this comment')
+      if (storageVotes.value.has(identifier)) throw new Error('You already voted on this comment!')
 
       const entry = storageComment.value.get(commentId)
 
       // Check if the comment is from the same user
-      if (entry?.user.username === user) throw new Error('control your ego please')
+      if (entry?.user.username === user) throw new Error('You can\'t vote in your own comment!')
 
       entry!.score += (type == 'sum' ? 1 : -1)
       storageVotes.value.add(identifier)
@@ -188,7 +185,7 @@ export const useFakeBackend = () => {
 
       return {
         status: 200,
-        message: `vote casted successfully`
+        message: `Vote casted successfully`
       }
     })
   }
