@@ -8,7 +8,7 @@ import type { ApiResponse } from '@/types/Requests'
 
 /* Mock up */
 import { useFakeBackend } from '@/composables/useFakeBackend'
-const { response, insertComment, castVote } = useFakeBackend()
+const { response, insertComment, patchComment, castVote } = useFakeBackend()
 /* ./Mock up */
 
 export const useCommentsStore = defineStore('comments', () => {
@@ -28,7 +28,7 @@ export const useCommentsStore = defineStore('comments', () => {
   const addComment = async (text: string): ApiResponse<Comment> => {
     try {
       if (!user.value) {
-        throw new Error('user is empty')
+        throw new Error('The user is not defined')
       }
 
       const body = {
@@ -41,6 +41,36 @@ export const useCommentsStore = defineStore('comments', () => {
       if (response.data) {
         comments.value.push(response.data)
         internalCache.value.set(response.data.id, response.data)
+      }
+      appendSuccessTooltip(response.message)
+
+      return response
+    } catch (err) {
+      const errorMessage: string = (err instanceof Error ? err.message : '')
+
+      appendErrorTooltip(errorMessage)
+    }
+  }
+  const editComment = async (id: number, text: string): ApiResponse<Comment> => {
+    try {
+      if (!user.value) {
+        throw new Error('The user is not defined')
+      }
+
+      const theComment = internalCache.value.get(id)
+      if (user.value.username !== theComment?.user.username) {
+        throw new Error('Edit action not allowed!')
+      }
+
+      const body = {
+        id,
+        content: text
+      }
+
+      const response = await patchComment(body)
+
+      if (response.data) {
+        theComment.content = text
       }
       appendSuccessTooltip(response.message)
 
@@ -103,6 +133,7 @@ export const useCommentsStore = defineStore('comments', () => {
   return {
     comments,
     addComment,
+    editComment,
     upvoteComment,
     downvoteComment
   }

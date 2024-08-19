@@ -19,6 +19,12 @@ defineEmits<{
 }>()
 
 const message = ref<string>(props.value)
+
+const resetMessage = () => {
+  message.value = props.value
+}
+
+defineExpose({ resetMessage })
 </script>
 
 <template>

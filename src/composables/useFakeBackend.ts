@@ -23,6 +23,7 @@ interface CastVoteArgs {
 }
 
 type InsertCommentFn = (arg0: Pick<Comment, 'content' | 'user'>) => Promise<ApiResponse<Comment>>
+type PatchCommentFn = (arg0: Pick<Comment, 'content' | 'id'>) => Promise<ApiResponse<Comment>>
 type CastVoteFn = (arg0: CastVoteArgs) => Promise<ApiResponse<unknown>>
 
 
@@ -166,6 +167,33 @@ export const useFakeBackend = () => {
       }
     })
   }
+  const patchComment: PatchCommentFn = async ({ id, content }) => {
+    return request<Comment>(() => {
+      if (!id) {
+        throw new Error('Missing identifier')
+      }
+      if (!content || content === '') {
+        throw new Error('Empty or invalid message')
+      }
+
+      const entry = storageComment.value.get(id)
+
+      if (!entry) {
+        throw new Error('Content not found')
+      }
+
+      entry.content = content
+      storageComment.value.set(id, entry)
+
+      updateLocalStorage()
+
+      return {
+        status: 200,
+        data: entry,
+        message: `Comment #${id} altered successfully!`
+      }
+    })
+  }
   const castVote: CastVoteFn = ({commentId, user, type}) => {
     return request(() => {
       const identifier = `${user}-${commentId}`
@@ -194,5 +222,5 @@ export const useFakeBackend = () => {
   // Setup
   initialize()
 
-  return { response, insertComment, castVote }
+  return { response, insertComment, patchComment, castVote }
 }

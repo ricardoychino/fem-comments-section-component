@@ -23,9 +23,19 @@ const isReplying = ref<boolean>(false)
 const userStore = useLoggedUserStore()
 const { loggedUser } = storeToRefs(userStore)
 
-const { upvoteComment, downvoteComment } = useCommentsStore()
+const { editComment, upvoteComment, downvoteComment } = useCommentsStore()
 
 const isSelf = computed(() => props.data.user.username === loggedUser.value?.username)
+
+const editCommentForm = ref<InstanceType<typeof CommentFormEdit> | null>(null)
+const handleEditFormSubmit = async (id: number, text: string) => {
+  const res = await editComment(id, text)
+
+  if (res && res.status === 200) {
+    isEditing.value = false
+    editCommentForm.value?.resetMessage()
+  }
+}
 </script>
 
 <template>
@@ -42,7 +52,13 @@ const isSelf = computed(() => props.data.user.username === loggedUser.value?.use
 
       <div class="comment-body">
         <p v-if="!isEditing">{{ data.content }}</p>
-        <CommentFormEdit :value="data.content" v-else @cancel="isEditing = false" />
+        <CommentFormEdit
+          v-else
+          ref="editCommentForm"
+          :value="data.content"
+          @submitted="(text) => handleEditFormSubmit(data.id, text)"
+          @cancel="isEditing = false"
+        />
       </div>
 
       <div class="comment-actions">
