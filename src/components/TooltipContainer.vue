@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import TooltipItem from '@/components/TooltipItem.vue'
 
-const props = withDefaults(
+import { useTooltipsStore } from '@/stores/tooltips'
+import { storeToRefs } from 'pinia'
+
+withDefaults(
   defineProps<{
     position?:
       | 'top-left'
@@ -16,49 +18,22 @@ const props = withDefaults(
     position: 'top-center'
   }
 )
-
-const list = ref([
-  {
-    theme: 'danger',
-    message: 'fail'
-  },
-  {
-    theme: 'neutral',
-    message: 'well wll'
-  },
-  {
-    theme: 'success',
-    message: 'success!'
-  },
-  {
-    theme: 'primary',
-    message: 'Primo ary'
-  }
-])
-
-const interval1 = setInterval(() => {
-  list.value.unshift({
-    theme: list.value[list.value.length - 1].theme,
-    message: `Toooltip de numero ${list.value.length}`
-  })
-}, 2000)
-
-const interval2 = setInterval(() => {
-  list.value.pop()
-}, 3000)
-
-setTimeout(() => {
-  clearInterval(interval1)
-  clearInterval(interval2)
-}, 30000)
+const store = useTooltipsStore()
+const { tooltips } = storeToRefs(store)
 </script>
 
 <template>
   <Teleport to="body">
     <div class="tooltips-container" :data-pos="position">
       <TransitionGroup name="tooltip-list">
-        <TooltipItem v-for="{ theme, message } in list" v-bind:theme :key="`${theme}-${message}`">
-          {{ message }}
+        <TooltipItem
+          v-for="item in tooltips"
+          :theme="item.theme"
+          :closable="item.closable"
+          @close="item.handleClose"
+          :key="item.key"
+        >
+          {{ item.text }}
         </TooltipItem>
       </TransitionGroup>
     </div>
