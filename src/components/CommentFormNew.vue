@@ -6,8 +6,6 @@ import AutoHeightTextArea from '@/components/AutoHeightTextArea.vue'
 import { useLoggedUserStore } from '@/stores/loggedUser'
 import { storeToRefs } from 'pinia'
 
-import type { User } from '@/types/Comments'
-
 const props = withDefaults(
   defineProps<{
     value?: string
@@ -28,8 +26,14 @@ defineEmits<{
 
 const message = ref<string>(props.value)
 
+const resetMessage = () => {
+  message.value = ''
+}
+
 const store = useLoggedUserStore()
 const { loggedUser: userInfo } = storeToRefs(store)
+
+defineExpose({ resetMessage })
 </script>
 
 <template>

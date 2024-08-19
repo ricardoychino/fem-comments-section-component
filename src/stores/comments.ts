@@ -1,8 +1,9 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
 import { useLoggedUserStore } from './loggedUser'
 
 import type { Comment } from '@/types/Comments'
+import type { ApiResponse } from '@/types/Requests'
 
 /* Mock up */
 import { useFakeBackend } from '@/composables/useFakeBackend'
@@ -19,7 +20,7 @@ export const useCommentsStore = defineStore('comments', () => {
   const comments = ref<Comment[]>(response.value || [])
 
   // Actions
-  const addComment = async (text: string) => {
+  const addComment = async (text: string): ApiResponse<Comment> => {
     try {
       if (!user.value) {
         throw new Error('user is empty')
@@ -32,12 +33,16 @@ export const useCommentsStore = defineStore('comments', () => {
 
       const response = await insertComment(body)
 
-      return response.message
+      if (response.data) {
+        comments.value.push(response.data)
+      }
+
+      return response
     } catch (err) {
       return (err instanceof Error ? err.message : err)
     }
   }
-  const upvoteComment = async (commentId: number) => {
+  const upvoteComment = async (commentId: number): ApiResponse<undefined> => {
     try {
       if (!user.value) {
         throw new Error('user is empty')
@@ -50,7 +55,7 @@ export const useCommentsStore = defineStore('comments', () => {
       return (err instanceof Error ? err.message : err)
     }
   }
-  const downvoteComment = async (commentId: number) => {
+  const downvoteComment = async (commentId: number): ApiResponse<undefined> => {
     try {
       if (!user.value) {
         throw new Error('user is empty')
@@ -63,6 +68,23 @@ export const useCommentsStore = defineStore('comments', () => {
       return (err instanceof Error ? err.message : err)
     }
   }
+
+  // Populate internal cache for faster UI updates
+  const internalCache = ref<Map<number, Comment>>(new Map())
+  const updateInternalCache = (arr: Comment[]) => {
+    for (const comment of arr) {
+      internalCache.value.set(comment.id, comment)
+
+      if (comment.replies && comment.replies.length > 0) {
+        updateInternalCache(comment.replies)
+      }
+    }
+  }
+  watch(comments, (newValue) => {
+    console.log('uploaded')
+    updateInternalCache(newValue)
+  }, { immediate: true })
+
 
   return {
     comments,

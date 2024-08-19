@@ -13,8 +13,14 @@ const { comments } = storeToRefs(store)
 
 const modalOpen = ref<boolean>(false)
 
-const handleSubmit = (value: string) => {
-  addComment(value)
+const createCommentForm = ref<InstanceType<typeof CommentFormNew> | null>(null)
+
+const handleSubmit = async (value: string) => {
+  const res = await addComment(value)
+
+  if (res.status === 200) {
+    createCommentForm.value?.resetMessage()
+  }
 }
 </script>
 
@@ -25,7 +31,7 @@ const handleSubmit = (value: string) => {
     </div>
 
     <div class="card">
-      <CommentFormNew @submitted="handleSubmit" />
+      <CommentFormNew ref="createCommentForm" @submitted="handleSubmit" />
     </div>
 
     <DeleteCommentModal v-model="modalOpen" />

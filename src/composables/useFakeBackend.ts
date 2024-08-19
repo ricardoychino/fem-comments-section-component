@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 
 import type { Ref } from 'vue'
 import type { Comment } from '@/types/Comments'
+import type { ApiResponse } from '@/types/Requests'
 
 type StorageComment = Map<number, Comment>    // ID - Comment
 type StorageReplies = Map<number, number[]>   // commentId => replyCommentsId[]
@@ -15,20 +16,14 @@ type Storage = {
   votes: Ref<StorageVotes>,
 }
 
-interface ApiLike<T> {
-  status: number,
-  data?: T,
-  message: string
-}
-
 interface CastVoteArgs {
   commentId: number,
   user: string,
   type: 'sum' | 'sub'
 }
 
-type InsertCommentFn = (arg0: Pick<Comment, 'content' | 'user'>) => Promise<ApiLike<Comment>>
-type CastVoteFn = (arg0: CastVoteArgs) => Promise<ApiLike<unknown>>
+type InsertCommentFn = (arg0: Pick<Comment, 'content' | 'user'>) => Promise<ApiResponse<Comment>>
+type CastVoteFn = (arg0: CastVoteArgs) => Promise<ApiResponse<unknown>>
 
 
 const createStorageFromArray = (data: Comment[], storage: Storage, currentParent: number = 0) => {
@@ -120,7 +115,7 @@ export const useFakeBackend = () => {
 
     const randomTime = Math.floor((Math.random() * 2500) + 500)
 
-    return new Promise<ApiLike<T>>((resolve, reject) => {
+    return new Promise<ApiResponse<T>>((resolve, reject) => {
       try {
         const res = fn(...args)
 
