@@ -35,6 +35,7 @@ export const useCommentsStore = defineStore('comments', () => {
 
       if (response.data) {
         comments.value.push(response.data)
+        internalCache.value.set(response.data.id, response.data)
       }
 
       return response
@@ -81,7 +82,6 @@ export const useCommentsStore = defineStore('comments', () => {
     }
   }
   watch(comments, (newValue) => {
-    console.log('uploaded')
     updateInternalCache(newValue)
   }, { immediate: true })
 

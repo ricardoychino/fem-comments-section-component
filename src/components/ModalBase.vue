@@ -101,6 +101,7 @@ const handleCloseBtn = () => {
   }
 }
 
+/* Transition mixin (@/assets/css/mixins.scss) */
 @include vue-transition('modal') {
   &__active {
     opacity: 1;
