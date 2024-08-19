@@ -1,17 +1,35 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import ModalBase from '@/components/ModalBase.vue'
 
-const isOpen = defineModel<boolean>({ default: false })
+import { useCommentsStore } from '@/stores/comments'
+import { storeToRefs } from 'pinia'
+
+const store = useCommentsStore()
+const { itemToDelete } = storeToRefs(store)
+const { setItemToDelete } = store
+
+const isOpen = computed({
+  get() {
+    return itemToDelete.value !== null
+  },
+  set(newValue) {
+    if (!newValue) {
+      setItemToDelete(null)
+    }
+  }
+})
 
 const emit = defineEmits<{
+  confirm: []
   close: []
 }>()
 
+const handleConfirm = () => {}
 const handleCancel = () => {
   isOpen.value = false
   emit('close')
 }
-const handleConfirm = () => {}
 </script>
 
 <template>

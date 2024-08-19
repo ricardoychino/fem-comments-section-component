@@ -11,8 +11,6 @@ const store = useCommentsStore()
 const { addComment } = store
 const { comments } = storeToRefs(store)
 
-const modalOpen = ref<boolean>(false)
-
 const createCommentForm = ref<InstanceType<typeof CommentFormNew> | null>(null)
 
 const handleSubmit = async (value: string) => {
@@ -34,6 +32,6 @@ const handleSubmit = async (value: string) => {
       <CommentFormNew ref="createCommentForm" @submitted="handleSubmit" />
     </div>
 
-    <DeleteCommentModal v-model="modalOpen" />
+    <DeleteCommentModal />
   </div>
 </template>

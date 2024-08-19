@@ -23,8 +23,12 @@ export const useCommentsStore = defineStore('comments', () => {
 
   // States
   const comments = ref<Comment[]>(response.value || [])
+  const itemToDelete = ref<number | null>(null)
 
   // Actions
+  const setItemToDelete = (id: number | null) => {
+    itemToDelete.value = id
+  }
   const addComment = async (text: string, replyingTo?: number): ApiResponse<Comment> => {
     try {
       if (!user.value) {
@@ -156,6 +160,8 @@ export const useCommentsStore = defineStore('comments', () => {
 
   return {
     comments,
+    itemToDelete,
+    setItemToDelete,
     addComment,
     replyComment,
     editComment,
