@@ -1,5 +1,7 @@
 <script setup lang="ts">
-withDefaults(
+import { computed } from 'vue'
+
+const props = withDefaults(
   defineProps<{
     url: string
     username?: string
@@ -10,11 +12,15 @@ withDefaults(
     size: ''
   }
 )
+
+const imageURL = computed(() =>
+  !props.url || props.url === '' ? '@/assets/images/avatar-placeholder.jpg' : props.url
+)
 </script>
 
 <template>
   <figure class="user-avatar" :style="{ height: size, width: size }">
-    <img :src="url" :alt="`${username} avatar`" />
+    <img :src="imageURL" :alt="`${username} avatar`" />
   </figure>
 </template>
 
