@@ -17,6 +17,8 @@ $color-primary: #5457b6;
 $color-primary-soft: #c3c4ef;
 $color-danger: #ed6468;
 $color-danger-soft: #ffb8bb;
+$color-success: #2ed573;
+$color-success-soft: #7bed9f;
 
 /* Neutral colors */
 $neutral-900: #324152;
@@ -29,13 +31,15 @@ $theme-colors: (
   "neutral": $neutral-700,
   "primary": $color-primary,
   "primary-inverse": $color-primary-soft,
-  "danger": $color-danger
+  "danger": $color-danger,
+  "success": $color-success,
 );
 $theme-colors-soft: (
   "neutral": $neutral-400,
   "primary": $color-primary-soft,
   "primary-inverse": $color-primary,
-  "danger": $color-danger-soft
+  "danger": $color-danger-soft,
+  "success": $color-success-soft
 );
 
 

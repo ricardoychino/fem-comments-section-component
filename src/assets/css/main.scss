@@ -90,4 +90,7 @@ button {
   &.danger {
     @include btn-theme($color: "danger");
   }
+  &.success {
+    @include btn-theme($color: "success");
+  }
 }

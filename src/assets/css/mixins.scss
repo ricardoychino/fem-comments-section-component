@@ -19,17 +19,17 @@
 @mixin vue-transition($name) {
 
   .#{$name} {
-  /*
-    Use with this format:
+    /*
+      Use with this format:
 
-    @include vue-transition('name') {
-      &__active { ... }         // CSS for when visible
-      &__inactive { ... }       // CSS for when hidden
-      &__transition-in { ... }  // CSS transition when becoming visible
-      &__transition-out { ... } // CSS transition when becoming hidden
-    }
-  */
-  @content;
+      @include vue-transition('name') {
+        &__active { ... }         // CSS for when visible
+        &__inactive { ... }       // CSS for when hidden
+        &__transition-in { ... }  // CSS transition when becoming visible
+        &__transition-out { ... } // CSS transition when becoming hidden
+      }
+    */
+    @content;
 
     &-enter {
       &-from {
