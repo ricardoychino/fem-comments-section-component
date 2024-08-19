@@ -7,12 +7,14 @@ import type { ApiResponse } from '@/types/Requests'
 
 type StorageComment = Map<number, Comment>    // ID - Comment
 type StorageReplies = Map<number, number[]>   // commentId => replyCommentsId[]
+type StorageResponses = Map<number, number>   // replyId => commentId
 type StorageVotes = Set<string>               // Pair `{username}-{commentId}`
 
 type Storage = {
   list: Ref<number[]>,
   comments: Ref<StorageComment>,
   replies: Ref<StorageReplies>,
+  responses: Ref<StorageResponses>,
   votes: Ref<StorageVotes>,
 }
 
@@ -22,7 +24,13 @@ interface CastVoteArgs {
   type: 'sum' | 'sub'
 }
 
-type InsertCommentFn = (arg0: Pick<Comment, 'content' | 'user'>) => Promise<ApiResponse<Comment>>
+type PostCommentResponseData<T> = {
+  row: T,
+  pos?: number,
+  parent?: number
+}
+
+type PostCommentFn = (arg0: Partial<Omit<Comment, 'id'>>) => Promise<ApiResponse<PostCommentResponseData<Comment>>>
 type PatchCommentFn = (arg0: Pick<Comment, 'content' | 'id'>) => Promise<ApiResponse<Comment>>
 type CastVoteFn = (arg0: CastVoteArgs) => Promise<ApiResponse<unknown>>
 
@@ -32,6 +40,7 @@ const createStorageFromArray = (data: Comment[], storage: Storage, currentParent
 
     if (currentParent) {
       storage.replies.value.set(currentParent, [...(storage.replies.value.get(currentParent) || []), item.id])
+      storage.responses.value.set(item.id, currentParent)
     } else {
       storage.list.value.push(item.id)
     }
@@ -55,6 +64,7 @@ export const useFakeBackend = () => {
   const nextCommentId = ref(0)
   const storageComment = ref<StorageComment>(new Map())
   const storageReplies = ref<StorageReplies>(new Map())
+  const storageResponses = ref<StorageResponses>(new Map())
   const storageVotes = ref<StorageVotes>(new Set())
   const responseList = ref<number[]>([])
 
@@ -96,6 +106,7 @@ export const useFakeBackend = () => {
         list: responseList,
         comments: storageComment,
         replies: storageReplies,
+        responses: storageResponses,
         votes: storageVotes
       }
 
@@ -105,7 +116,10 @@ export const useFakeBackend = () => {
     } else {
       responseList.value = [...(JSON.parse(fromLocalStorage.list))]
       JSON.parse(fromLocalStorage.comments).forEach(([key, value]: [number, Comment]) => storageComment.value.set(+key, value));
-      JSON.parse(fromLocalStorage.replies).forEach(([key, value]: [number, number[]]) => storageReplies.value.set(+key, value));
+      JSON.parse(fromLocalStorage.replies).forEach(([key, value]: [number, number[]]) => {
+        storageReplies.value.set(+key, value)
+        value.forEach(val => storageResponses.value.set(val, +key))
+      });
       [...(JSON.parse(fromLocalStorage.votes))].forEach(val => storageVotes.value.add(val))
     }
 
@@ -136,8 +150,8 @@ export const useFakeBackend = () => {
   }
 
   // Actions - perform mutations
-  const insertComment: InsertCommentFn = async ({ content, user }) => {
-    return request<Comment>(() => {
+  const postComment: PostCommentFn = async ({ replyingTo, content, user }) => {
+    return request<PostCommentResponseData<Comment>>(() => {
       if (!user) {
         throw new Error('Missing author')
       }
@@ -154,7 +168,43 @@ export const useFakeBackend = () => {
       }
 
       storageComment.value.set(nextCommentId.value, newRow)
-      responseList.value.push(nextCommentId.value)
+
+      let message = `Comment #${newRow.id} added successfully!`
+      const data: PostCommentResponseData<Comment> = {row: newRow}
+
+      if (replyingTo && !isNaN(+replyingTo)) {
+        let parent = storageResponses.value.get(+replyingTo)
+
+        // Check if the comment we are replying is a "child" | sibling comment
+        if (!parent) {
+          parent = +replyingTo
+        }
+
+        const allReplies = storageReplies.value.get(parent) || []
+        let pos = 0
+
+        // If it is already the parent, just append at the end of the array of replies
+        if (parent === replyingTo) {
+          pos = (allReplies?.length || 1) - 1
+        }
+        // Case contrary we need to insert between the messages
+        else {
+          pos = allReplies?.indexOf(+replyingTo) || 0
+        }
+        console.log(allReplies)
+
+        // storageReplies.value.set(parent, [...(storageReplies.value.get(parent) || []), nextCommentId.value])
+
+        allReplies?.splice(pos + 1, 0, nextCommentId.value)
+        storageReplies.value.set(parent, allReplies!)
+        storageResponses.value.set(nextCommentId.value, parent)
+
+        message = `Replied successfully`
+        data.parent = parent
+        data.pos = pos + 1
+      } else {
+        responseList.value.push(nextCommentId.value)
+      }
 
       updateLocalStorage()
 
@@ -162,8 +212,8 @@ export const useFakeBackend = () => {
 
       return {
         status: 200,
-        data: newRow,
-        message: `Comment #${newRow.id} added successfully!`
+        data,
+        message
       }
     })
   }
@@ -204,7 +254,7 @@ export const useFakeBackend = () => {
       const entry = storageComment.value.get(commentId)
 
       // Check if the comment is from the same user
-      if (entry?.user.username === user) throw new Error('You can\'t vote in your own comment!')
+      if (entry?.user.username === user) throw new Error('You can\'t vote on your own comment!')
 
       entry!.score += (type == 'sum' ? 1 : -1)
       storageVotes.value.add(identifier)
@@ -222,5 +272,5 @@ export const useFakeBackend = () => {
   // Setup
   initialize()
 
-  return { response, insertComment, patchComment, castVote }
+  return { response, postComment, patchComment, castVote }
 }

@@ -11,6 +11,6 @@ export type Comment = {
   createdAt: number | string
   score: number,
   user: User,
-  replyingTo?: string,
+  replyingTo?: string | number,
   replies?: Comment[]
 }

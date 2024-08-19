@@ -23,10 +23,11 @@ const isReplying = ref<boolean>(false)
 const userStore = useLoggedUserStore()
 const { loggedUser } = storeToRefs(userStore)
 
-const { editComment, upvoteComment, downvoteComment } = useCommentsStore()
+const { replyComment, editComment, upvoteComment, downvoteComment } = useCommentsStore()
 
 const isSelf = computed(() => props.data.user.username === loggedUser.value?.username)
 
+// Edit own comment
 const editCommentForm = ref<InstanceType<typeof CommentFormEdit> | null>(null)
 const handleEditFormSubmit = async (id: number, text: string) => {
   const res = await editComment(id, text)
@@ -34,6 +35,14 @@ const handleEditFormSubmit = async (id: number, text: string) => {
   if (res && res.status === 200) {
     isEditing.value = false
     editCommentForm.value?.resetMessage()
+  }
+}
+
+// Reply some comment
+const handleReplySubmit = async (message: string) => {
+  const res = await replyComment(props.data.id, message)
+  if (res && res.status === 200) {
+    isReplying.value = false
   }
 }
 </script>
@@ -74,7 +83,11 @@ const handleEditFormSubmit = async (id: number, text: string) => {
 
     <Transition name="slide-up">
       <div class="card reply-form" v-if="isReplying">
-        <CommentFormNew :showCancelButton="true" @cancel="isReplying = false" />
+        <CommentFormNew
+          :showCancelButton="true"
+          @submitted="handleReplySubmit"
+          @cancel="isReplying = false"
+        />
       </div>
     </Transition>
 

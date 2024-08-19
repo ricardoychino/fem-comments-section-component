@@ -8,7 +8,7 @@ import type { ApiResponse } from '@/types/Requests'
 
 /* Mock up */
 import { useFakeBackend } from '@/composables/useFakeBackend'
-const { response, insertComment, patchComment, castVote } = useFakeBackend()
+const { response, postComment, patchComment, castVote } = useFakeBackend()
 /* ./Mock up */
 
 export const useCommentsStore = defineStore('comments', () => {
@@ -25,22 +25,30 @@ export const useCommentsStore = defineStore('comments', () => {
   const comments = ref<Comment[]>(response.value || [])
 
   // Actions
-  const addComment = async (text: string): ApiResponse<Comment> => {
+  const addComment = async (text: string, replyingTo?: number): ApiResponse<Comment> => {
     try {
       if (!user.value) {
         throw new Error('The user is not defined')
       }
 
-      const body = {
+      const body: Partial<Omit<Comment, 'id'>> = {
         content: text,
         user: user.value
       }
 
-      const response = await insertComment(body)
+      if (typeof replyingTo !== 'undefined') {
+        body.replyingTo = replyingTo
+      }
+
+      const response = await postComment(body)
 
       if (response.data) {
-        comments.value.push(response.data)
-        internalCache.value.set(response.data.id, response.data)
+        internalCache.value.set(response.data.row.id, response.data.row)
+
+        // Add to the main queue => only triggers when not a reply
+        if (typeof replyingTo === 'undefined') {
+          comments.value.push(response.data.row)
+        }
       }
       appendSuccessTooltip(response.message)
 
@@ -50,6 +58,22 @@ export const useCommentsStore = defineStore('comments', () => {
 
       appendErrorTooltip(errorMessage)
     }
+  }
+  const replyComment = async (replyTo: number, text: string) => {
+    const resp = await addComment(text, replyTo)
+
+    if (resp.status === 200) {
+      const { row, pos, parent } = resp.data
+
+      const pointer = internalCache.value.get(row.id) as Comment
+      const parentPointer = internalCache.value.get(parent)
+
+      if (parentPointer && !parentPointer?.replies) parentPointer.replies = [pointer]
+      else {
+        parentPointer?.replies?.splice(pos, 0, pointer)
+      }
+    }
+    return resp
   }
   const editComment = async (id: number, text: string): ApiResponse<Comment> => {
     try {
@@ -133,6 +157,7 @@ export const useCommentsStore = defineStore('comments', () => {
   return {
     comments,
     addComment,
+    replyComment,
     editComment,
     upvoteComment,
     downvoteComment
