@@ -8,12 +8,13 @@ import { useCommentsStore } from '@/stores/comments'
 import { storeToRefs } from 'pinia'
 
 const store = useCommentsStore()
+const { addComment } = store
 const { comments } = storeToRefs(store)
 
 const modalOpen = ref<boolean>(false)
 
 const handleSubmit = (value: string) => {
-  console.log(value)
+  addComment(value)
 }
 </script>
 

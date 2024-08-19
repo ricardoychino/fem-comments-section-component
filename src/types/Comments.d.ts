@@ -8,7 +8,7 @@ export type User = {
 export type Comment = {
   id: number,
   content: string,
-  createdAt: string // Date
+  createdAt: number | string
   score: number,
   user: User,
   replyingTo?: string,

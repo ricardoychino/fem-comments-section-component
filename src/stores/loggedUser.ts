@@ -9,7 +9,7 @@ interface LoginData {
 }
 
 export const useLoggedUserStore = defineStore('loggedUser', () => {
-  const loggedUser = ref<User | null>()
+  const loggedUser = ref<User | null>(null)
 
   const userLogin = async ({ username, password }: LoginData) => {
     const res = await fetch(`/src/mock/user-${username}-${password}.json`)

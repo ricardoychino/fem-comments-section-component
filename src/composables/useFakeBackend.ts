@@ -1,7 +1,7 @@
 import initial from '@/mock/comments.json'
 import { computed, ref } from 'vue'
 
-import type { Ref, ComputedGetter } from 'vue'
+import type { Ref } from 'vue'
 import type { Comment } from '@/types/Comments'
 
 type StorageComment = Map<number, Comment>    // ID - Comment
@@ -15,17 +15,20 @@ type Storage = {
   votes: Ref<StorageVotes>,
 }
 
+interface ApiLike<T> {
+  status: number,
+  data?: T,
+  message: string
+}
+
 interface CastVoteArgs {
   commentId: number,
   user: string,
   type: 'sum' | 'sub'
 }
-type CastVoteFn = (arg0: CastVoteArgs) => void
 
-interface Exports {
-  response: ComputedGetter<Comment[]>,
-  castVote: (arg0: castVoteArgs) => void
-}
+type InsertCommentFn = (arg0: Pick<Comment, 'content' | 'user'>) => Promise<ApiLike<Comment>>
+type CastVoteFn = (arg0: CastVoteArgs) => Promise<ApiLike<unknown>>
 
 
 const createStorageFromArray = (data: Comment[], storage: Storage, currentParent: number = 0) => {
@@ -39,7 +42,13 @@ const createStorageFromArray = (data: Comment[], storage: Storage, currentParent
 
     if (item.replies && item.replies.length > 0) {
       createStorageFromArray(item.replies, storage, item.id)
+    }
+
+    if (item.replies) {
       delete item.replies
+    }
+    if (item.replyingTo) {
+      delete item.replyingTo
     }
 
     storage.comments.value.set(item.id, item)
@@ -47,28 +56,23 @@ const createStorageFromArray = (data: Comment[], storage: Storage, currentParent
 }
 
 export const useFakeBackend = () => {
+  const nextCommentId = ref(0)
   const storageComment = ref<StorageComment>(new Map())
   const storageReplies = ref<StorageReplies>(new Map())
   const storageVotes = ref<StorageVotes>(new Set())
   const responseList = ref<number[]>([])
 
   // State
-  const storage = {
-    list: responseList,
-    comments: storageComment,
-    replies: storageReplies,
-    votes: storageVotes
-  }
 
   // Getter
   const response = computed(() => {
     const res: Comment[] = []
 
-    for (const id of storage.list.value) {
-      const entry = storage.comments.value.get(id) as Comment
+    for (const id of responseList.value) {
+      const entry = storageComment.value.get(id) as Comment
 
-      if (storage.replies.value.has(id)) {
-        entry.replies = storage.replies.value.get(id)!.map(el => storage.comments.value.get(+el) as Comment)
+      if (storageReplies.value.has(id)) {
+        entry.replies = storageReplies.value.get(id)!.map(el => storageComment.value.get(+el) as Comment)
       }
 
       res.push(entry)
@@ -79,10 +83,10 @@ export const useFakeBackend = () => {
 
   // Actions - local
   const updateLocalStorage = () => {
-    localStorage.setItem('list-data', JSON.stringify([...storage.list.value]))
-    localStorage.setItem('comments-data', JSON.stringify([...storage.comments.value.entries()]))
-    localStorage.setItem('replies-data', JSON.stringify([...storage.replies.value.entries()]))
-    localStorage.setItem('votes-data', JSON.stringify([...storage.votes.value]))
+    localStorage.setItem('list-data', JSON.stringify([...responseList.value]))
+    localStorage.setItem('comments-data', JSON.stringify([...storageComment.value.entries()]))
+    localStorage.setItem('replies-data', JSON.stringify([...storageReplies.value.entries()]))
+    localStorage.setItem('votes-data', JSON.stringify([...storageVotes.value]))
   }
   const initialize = () => {
     const fromLocalStorage = {
@@ -92,38 +96,111 @@ export const useFakeBackend = () => {
       votes: localStorage.getItem('votes-data')
     }
     if (!fromLocalStorage.list || !fromLocalStorage.comments || !fromLocalStorage.replies || !fromLocalStorage.votes) {
+      const storage = {
+        list: responseList,
+        comments: storageComment,
+        replies: storageReplies,
+        votes: storageVotes
+      }
+
       createStorageFromArray(initial, storage)
 
       updateLocalStorage()
     } else {
-      storage.list.value = [...(JSON.parse(fromLocalStorage.list))]
-      JSON.parse(fromLocalStorage.comments).forEach(([key, value]: [number, Comment]) => storage.comments.value.set(+key, value));
-      JSON.parse(fromLocalStorage.replies).forEach(([key, value]: [number, number[]]) => storage.replies.value.set(+key, value));
-      [...(JSON.parse(fromLocalStorage.votes))].forEach(val => storage.votes.value.add(val))
+      responseList.value = [...(JSON.parse(fromLocalStorage.list))]
+      JSON.parse(fromLocalStorage.comments).forEach(([key, value]: [number, Comment]) => storageComment.value.set(+key, value));
+      JSON.parse(fromLocalStorage.replies).forEach(([key, value]: [number, number[]]) => storageReplies.value.set(+key, value));
+      [...(JSON.parse(fromLocalStorage.votes))].forEach(val => storageVotes.value.add(val))
     }
+
+    nextCommentId.value = Math.max(...storageComment.value.keys()) + 1
+  }
+
+  const request = async <T>(fn: Function, ...args: any[]) => {
+
+    const randomTime = Math.floor((Math.random() * 2500) + 500)
+
+    return new Promise<ApiLike<T>>((resolve, reject) => {
+      try {
+        const res = fn(...args)
+
+        setTimeout(() => {
+          resolve(res)
+        }, randomTime)
+      } catch (err) {
+        let errorMessage = 'REQUEST ERROR'
+
+        if (err instanceof Error) {
+          errorMessage = err.message
+        }
+
+        reject({
+          status: 400,
+          message: errorMessage
+        })
+      }
+    })
   }
 
   // Actions - perform mutations
+  const insertComment: InsertCommentFn = async ({ content, user }) => {
+    return request<Comment>(() => {
+      if (!user) {
+        throw new Error('author undefined')
+      }
+      if (!content || content === '') {
+        throw new Error('empty or invalid message')
+      }
+
+      const newRow: Comment = {
+        id: nextCommentId.value,
+        content,
+        user,
+        createdAt: Date.now(),
+        score: 0
+      }
+
+      storageComment.value.set(nextCommentId.value, newRow)
+      responseList.value.push(nextCommentId.value)
+
+      updateLocalStorage()
+
+      nextCommentId.value++
+
+      return {
+        status: 200,
+        data: newRow,
+        message: `row ${newRow.id} added successfully`
+      }
+    })
+  }
   const castVote: CastVoteFn = ({commentId, user, type}) => {
-    const identifier = `${user}-${commentId}`
+    return request(() => {
+      const identifier = `${user}-${commentId}`
 
-    // Do not allow to vote more than once
-    if (storage.votes.value.has(identifier)) return;
+      // Do not allow to vote more than once
+      if (storageVotes.value.has(identifier)) throw new Error('user already voted on this comment')
 
-    const entry = storage.comments.value.get(commentId)
+      const entry = storageComment.value.get(commentId)
 
-    // Check if the comment is from the same user
-    if (entry?.user.username === user) return;
+      // Check if the comment is from the same user
+      if (entry?.user.username === user) throw new Error('control your ego please')
 
-    entry!.score += (type == 'sum' ? 1 : -1)
-    storage.votes.value.add(identifier)
+      entry!.score += (type == 'sum' ? 1 : -1)
+      storageVotes.value.add(identifier)
 
-    updateLocalStorage()
+      updateLocalStorage()
+
+      return {
+        status: 200,
+        message: `vote casted successfully`
+      }
+    })
   }
 
 
   // Setup
   initialize()
 
-  return { response, castVote }
+  return { response, insertComment, castVote }
 }
