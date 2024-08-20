@@ -23,7 +23,7 @@ const isReplying = ref<boolean>(false)
 const userStore = useLoggedUserStore()
 const { loggedUser } = storeToRefs(userStore)
 
-const { setItemToDelete, replyComment, editComment, upvoteComment, downvoteComment } =
+const { setItemToRemove, replyComment, editComment, upvoteComment, downvoteComment } =
   useCommentsStore()
 
 const isSelf = computed(() => props.data.user.username === loggedUser.value?.username)
@@ -72,7 +72,7 @@ const handleReplySubmit = async (message: string) => {
       </div>
 
       <div class="comment-actions">
-        <button class="danger flat-btn" v-if="isSelf" @click="setItemToDelete(data.id)">
+        <button class="danger flat-btn" v-if="isSelf" @click="setItemToRemove(data.id)">
           <ButtonIcon type="delete" />Delete
         </button>
         <button class="primary flat-btn" v-if="isSelf" @click="isEditing = true">

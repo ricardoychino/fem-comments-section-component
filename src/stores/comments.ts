@@ -8,7 +8,7 @@ import type { ApiResponse } from '@/types/Requests'
 
 /* Mock up */
 import { useFakeBackend } from '@/composables/useFakeBackend'
-const { response, postComment, patchComment, castVote } = useFakeBackend()
+const { response, postComment, patchComment, deleteComment, castVote } = useFakeBackend()
 /* ./Mock up */
 
 export const useCommentsStore = defineStore('comments', () => {
@@ -23,11 +23,11 @@ export const useCommentsStore = defineStore('comments', () => {
 
   // States
   const comments = ref<Comment[]>(response.value || [])
-  const itemToDelete = ref<number | null>(null)
+  const itemToRemove = ref<number | null>(null)
 
   // Actions
-  const setItemToDelete = (id: number | null) => {
-    itemToDelete.value = id
+  const setItemToRemove = (id: number | null) => {
+    itemToRemove.value = id
   }
   const addComment = async (text: string, replyingTo?: number): ApiResponse<Comment> => {
     try {
@@ -63,7 +63,7 @@ export const useCommentsStore = defineStore('comments', () => {
       appendErrorTooltip(errorMessage)
     }
   }
-  const replyComment = async (replyTo: number, text: string) => {
+  const replyComment = async (replyTo: number, text: string): ApiResponse<Comment> => {
     const resp = await addComment(text, replyTo)
 
     if (resp.status === 200) {
@@ -99,6 +99,58 @@ export const useCommentsStore = defineStore('comments', () => {
 
       if (response.data) {
         theComment.content = text
+      }
+      appendSuccessTooltip(response.message)
+
+      return response
+    } catch (err) {
+      const errorMessage: string = (err instanceof Error ? err.message : '')
+
+      appendErrorTooltip(errorMessage)
+    }
+  }
+  const removeComment = async (): ApiResponse<undefined> => {
+    try {
+      const id = itemToRemove.value
+
+      if (!id) {
+        throw new Error('Something went wrong')
+      }
+
+      if (!user.value) {
+        throw new Error('The user is not defined')
+      }
+
+      const theComment = internalCache.value.get(id)
+      if (user.value.username !== theComment?.user.username) {
+        throw new Error('Action not allowed!')
+      }
+
+      const body = {
+        id
+      }
+
+      const response = await deleteComment(body)
+
+      console.log(response.data)
+
+      if (response.data) {
+        if (response.data.row) {
+          console.log('is here')
+          theComment.content = response.data.row.content
+          theComment.user = response.data.row.user
+          theComment.removed = response.data.row.removed
+          theComment.score = 0
+        } else {
+          if (response.data.parent >= 0) {
+            const parent = internalCache.value.get(response.data.parent)
+            parent?.replies?.splice(response.data.pos, 1)
+          } else {
+            comments.value.splice(response.data.pos, 1)
+            console.log(comments.value)
+          }
+          internalCache.value.delete(id)
+        }
       }
       appendSuccessTooltip(response.message)
 
@@ -160,11 +212,12 @@ export const useCommentsStore = defineStore('comments', () => {
 
   return {
     comments,
-    itemToDelete,
-    setItemToDelete,
+    itemToRemove,
+    setItemToRemove,
     addComment,
     replyComment,
     editComment,
+    removeComment,
     upvoteComment,
     downvoteComment
   }

@@ -6,16 +6,16 @@ import { useCommentsStore } from '@/stores/comments'
 import { storeToRefs } from 'pinia'
 
 const store = useCommentsStore()
-const { itemToDelete } = storeToRefs(store)
-const { setItemToDelete } = store
+const { itemToRemove } = storeToRefs(store)
+const { setItemToRemove, removeComment } = store
 
 const isOpen = computed({
   get() {
-    return itemToDelete.value !== null
+    return itemToRemove.value !== null
   },
   set(newValue) {
     if (!newValue) {
-      setItemToDelete(null)
+      setItemToRemove(null)
     }
   }
 })
@@ -25,7 +25,13 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const handleConfirm = () => {}
+const handleConfirm = async () => {
+  const res = await removeComment()
+
+  if (res.status === 200) {
+    isOpen.value = false
+  }
+}
 const handleCancel = () => {
   isOpen.value = false
   emit('close')

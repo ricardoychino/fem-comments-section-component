@@ -29,9 +29,15 @@ type PostCommentResponseData<T> = {
   pos?: number,
   parent?: number
 }
+type DeleteCommentResponseData<T> = {
+  row: T,
+  pos?: number,
+  parent: number,
+}
 
 type PostCommentFn = (arg0: Partial<Omit<Comment, 'id'>>) => Promise<ApiResponse<PostCommentResponseData<Comment>>>
 type PatchCommentFn = (arg0: Pick<Comment, 'content' | 'id'>) => Promise<ApiResponse<Comment>>
+type DeleteCommentFn = (arg0: { id: number }) => Promise<ApiResponse<DeleteCommentResponseData<Comment>>>
 type CastVoteFn = (arg0: CastVoteArgs) => Promise<ApiResponse<unknown>>
 
 
@@ -191,7 +197,6 @@ export const useFakeBackend = () => {
         else {
           pos = allReplies?.indexOf(+replyingTo) || 0
         }
-        console.log(allReplies)
 
         // storageReplies.value.set(parent, [...(storageReplies.value.get(parent) || []), nextCommentId.value])
 
@@ -244,6 +249,75 @@ export const useFakeBackend = () => {
       }
     })
   }
+  const deleteComment: DeleteCommentFn = async ({ id }) => {
+    return request<Comment>(() => {
+      if (!id) {
+        throw new Error('Missing identifier')
+      }
+
+      const entry = storageComment.value.get(id)
+
+      if (!entry || entry.removed) {
+        return {
+          status: 304,
+          message: 'Nothing removed'
+        }
+      }
+      let parent = -1
+      let pos = -1
+      let removed
+
+      // If there's no 'children', just remove from everywhere
+      if (!storageReplies.value.has(id)) {
+        storageComment.value.delete(id)
+
+        parent = -1
+        pos = responseList.value.indexOf(id)
+
+        // If found, means it is from "parent" list
+        if (pos >= 0) {
+          responseList.value.splice(pos, 1)
+        } else {
+          parent = storageResponses.value.get(id) || -1
+          storageResponses.value.delete(id)
+          const parentList = storageReplies.value.get(parent)
+
+          pos = parentList?.indexOf(id) as number
+          if (pos >= 0) {
+            parentList?.splice(pos, 1)
+          }
+        }
+      }
+      // Case contrary, empty the original comment to not break the flow of comments
+      else {
+        removed = {
+          ...entry,
+          removed: true,
+          content: '',
+          user: {
+            username: '',
+            image: {
+              png: '',
+              webp: ''
+            }
+          }
+        }
+        storageComment.value.set(id, removed)
+      }
+
+      updateLocalStorage()
+
+      return {
+        status: 200,
+        data: {
+          row: removed,
+          pos,
+          parent
+        },
+        message: `Comment removed successfully!`
+      }
+    })
+  }
   const castVote: CastVoteFn = ({commentId, user, type}) => {
     return request(() => {
       const identifier = `${user}-${commentId}`
@@ -272,5 +346,5 @@ export const useFakeBackend = () => {
   // Setup
   initialize()
 
-  return { response, postComment, patchComment, castVote }
+  return { response, postComment, patchComment, deleteComment, castVote }
 }

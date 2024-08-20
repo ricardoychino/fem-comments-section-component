@@ -12,5 +12,6 @@ export type Comment = {
   score: number,
   user: User,
   replyingTo?: string | number,
-  replies?: Comment[]
+  replies?: Comment[],
+  removed?: boolean
 }

@@ -14,7 +14,7 @@ const props = withDefaults(
 )
 
 const imageURL = computed(() =>
-  !props.url || props.url === '' ? '@/assets/images/avatar-placeholder.jpg' : props.url
+  !props.url || props.url === '' ? '/images/avatar-placeholder.jpg' : props.url
 )
 </script>
 
