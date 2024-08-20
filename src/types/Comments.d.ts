@@ -10,7 +10,7 @@ export type Comment = {
   content: string,
   createdAt: number | string
   score: number,
-  user: User,
+  user: User | null,
   replyingTo?: string | number,
   replies?: Comment[],
   removed?: boolean

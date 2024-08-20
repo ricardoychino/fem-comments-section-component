@@ -1,24 +1,30 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 
 import type { User } from '@/types/Comments'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
-    user: User
+    user: User | null
     isSelf?: boolean
   }>(),
   {
     isSelf: false
   }
 )
+
+const avatarImageURL = computed(() => props.user?.image.webp || props.user?.image.png || '')
+const visibleUsername = computed(() => props.user?.username || 'Unknown user')
 </script>
 
 <template>
   <div class="comment-details">
-    <UserAvatar size="36px" :url="user.image.png" :username="user.username" />
+    <UserAvatar size="36px" :url="avatarImageURL" :username="visibleUsername" />
 
-    <h4 class="username">{{ user.username }} <span class="self-badge" v-if="isSelf">you</span></h4>
+    <h4 class="username">
+      {{ visibleUsername }} <span class="self-badge" v-if="isSelf">you</span>
+    </h4>
 
     <time class="time">1 month ago</time>
   </div>

@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
 import { useLoggedUserStore } from './loggedUser'
 import { useTooltipsStore } from './tooltips'
@@ -122,7 +122,7 @@ export const useCommentsStore = defineStore('comments', () => {
       }
 
       const theComment = internalCache.value.get(id)
-      if (user.value.username !== theComment?.user.username) {
+      if (user.value.username !== theComment?.user?.username) {
         throw new Error('Action not allowed!')
       }
 
@@ -138,7 +138,7 @@ export const useCommentsStore = defineStore('comments', () => {
         if (response.data.row) {
           console.log('is here')
           theComment.content = response.data.row.content
-          theComment.user = response.data.row.user
+          theComment.user = null
           theComment.removed = response.data.row.removed
           theComment.score = 0
         } else {

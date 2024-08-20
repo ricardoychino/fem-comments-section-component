@@ -294,13 +294,7 @@ export const useFakeBackend = () => {
           ...entry,
           removed: true,
           content: '',
-          user: {
-            username: '',
-            image: {
-              png: '',
-              webp: ''
-            }
-          }
+          user: null
         }
         storageComment.value.set(id, removed)
       }
@@ -328,7 +322,7 @@ export const useFakeBackend = () => {
       const entry = storageComment.value.get(commentId)
 
       // Check if the comment is from the same user
-      if (entry?.user.username === user) throw new Error('You can\'t vote on your own comment!')
+      if (entry?.user?.username === user) throw new Error('You can\'t vote on your own comment!')
 
       entry!.score += (type == 'sum' ? 1 : -1)
       storageVotes.value.add(identifier)
