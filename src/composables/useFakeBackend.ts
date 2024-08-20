@@ -1,4 +1,4 @@
-import initial from '@/mock/comments.json'
+import initial from '@/../public/mock/comments.json'
 import { computed, ref } from 'vue'
 
 import type { Ref } from 'vue'
