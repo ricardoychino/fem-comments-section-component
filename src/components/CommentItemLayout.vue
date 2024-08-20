@@ -43,15 +43,7 @@
   .comment-actions {
     grid-area: actions;
     justify-self: end;
-  }
-
-  &.is-editing {
-    @media screen and (max-width: $bp-medium - 1) {
-      .comment-rating,
-      .comment-actions {
-        display: none;
-      }
-    }
+    display: flex;
   }
 
   @include medium-screen {
