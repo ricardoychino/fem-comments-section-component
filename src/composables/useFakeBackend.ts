@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 
 import type { Ref } from 'vue'
 import type { Comment } from '@/types/Comments'
-import type { ApiResponse } from '@/types/Requests'
+import type { ApiResponse, Data } from '@/types/Requests'
 
 type StorageComment = Map<number, Comment>    // ID - Comment
 type StorageReplies = Map<number, number[]>   // commentId => replyCommentsId[]
@@ -24,20 +24,9 @@ interface CastVoteArgs {
   type: 'sum' | 'sub'
 }
 
-type PostCommentResponseData<T> = {
-  row: T,
-  pos?: number,
-  parent?: number
-}
-type DeleteCommentResponseData<T> = {
-  row: T,
-  pos?: number,
-  parent: number,
-}
-
-type PostCommentFn = (arg0: Partial<Omit<Comment, 'id'>>) => Promise<ApiResponse<PostCommentResponseData<Comment>>>
+type PostCommentFn = (arg0: Partial<Omit<Comment, 'id'>>) => Promise<ApiResponse<Data<Comment>>>
 type PatchCommentFn = (arg0: Pick<Comment, 'content' | 'id'>) => Promise<ApiResponse<Comment>>
-type DeleteCommentFn = (arg0: { id: number }) => Promise<ApiResponse<DeleteCommentResponseData<Comment>>>
+type DeleteCommentFn = (arg0: { id: number }) => Promise<ApiResponse<Data<Comment>>>
 type CastVoteFn = (arg0: CastVoteArgs) => Promise<ApiResponse<unknown>>
 
 
@@ -157,7 +146,7 @@ export const useFakeBackend = () => {
 
   // Actions - perform mutations
   const postComment: PostCommentFn = async ({ replyingTo, content, user }) => {
-    return request<PostCommentResponseData<Comment>>(() => {
+    return request<Data<Comment>>(() => {
       if (!user) {
         throw new Error('Missing author')
       }
@@ -176,7 +165,7 @@ export const useFakeBackend = () => {
       storageComment.value.set(nextCommentId.value, newRow)
 
       let message = `Comment #${newRow.id} added successfully!`
-      const data: PostCommentResponseData<Comment> = {row: newRow}
+      const data: Data<Comment> = {row: newRow, pos: -1, parent: -1}
 
       if (replyingTo && !isNaN(+replyingTo)) {
         let parent = storageResponses.value.get(+replyingTo)
@@ -250,7 +239,7 @@ export const useFakeBackend = () => {
     })
   }
   const deleteComment: DeleteCommentFn = async ({ id }) => {
-    return request<Comment>(() => {
+    return request<Data<Comment>>(() => {
       if (!id) {
         throw new Error('Missing identifier')
       }

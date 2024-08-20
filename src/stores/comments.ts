@@ -4,12 +4,14 @@ import { useLoggedUserStore } from './loggedUser'
 import { useTooltipsStore } from './tooltips'
 
 import type { Comment } from '@/types/Comments'
-import type { ApiResponse } from '@/types/Requests'
+import type { ApiResponse, Data } from '@/types/Requests'
 
 /* Mock up */
 import { useFakeBackend } from '@/composables/useFakeBackend'
 const { response, postComment, patchComment, deleteComment, castVote } = useFakeBackend()
 /* ./Mock up */
+
+type RequestResp = Promise<ApiResponse<Data<Comment> | Comment> | unknown>
 
 export const useCommentsStore = defineStore('comments', () => {
 
@@ -29,7 +31,7 @@ export const useCommentsStore = defineStore('comments', () => {
   const setItemToRemove = (id: number | null) => {
     itemToRemove.value = id
   }
-  const addComment = async (text: string, replyingTo?: number): ApiResponse<Comment> => {
+  const addComment = async (text: string, replyingTo?: number): RequestResp => {
     try {
       if (!user.value) {
         throw new Error('The user is not defined')
@@ -61,13 +63,15 @@ export const useCommentsStore = defineStore('comments', () => {
       const errorMessage: string = (err instanceof Error ? err.message : '')
 
       appendErrorTooltip(errorMessage)
+
+      return err
     }
   }
-  const replyComment = async (replyTo: number, text: string): ApiResponse<Comment> => {
-    const resp = await addComment(text, replyTo)
+  const replyComment = async (replyTo: number, text: string): RequestResp => {
+    const resp = await addComment(text, replyTo) as ApiResponse<Data<Comment>>
 
     if (resp.status === 200) {
-      const { row, pos, parent } = resp.data
+      const { row, pos, parent } = resp.data as Data<Comment>
 
       const pointer = internalCache.value.get(row.id) as Comment
       const parentPointer = internalCache.value.get(parent)
@@ -79,14 +83,14 @@ export const useCommentsStore = defineStore('comments', () => {
     }
     return resp
   }
-  const editComment = async (id: number, text: string): ApiResponse<Comment> => {
+  const editComment = async (id: number, text: string): RequestResp => {
     try {
       if (!user.value) {
         throw new Error('The user is not defined')
       }
 
       const theComment = internalCache.value.get(id)
-      if (user.value.username !== theComment?.user.username) {
+      if (user.value.username !== theComment?.user?.username) {
         throw new Error('Edit action not allowed!')
       }
 
@@ -109,7 +113,7 @@ export const useCommentsStore = defineStore('comments', () => {
       appendErrorTooltip(errorMessage)
     }
   }
-  const removeComment = async (): ApiResponse<undefined> => {
+  const removeComment = async (): RequestResp => {
     try {
       const id = itemToRemove.value
 
@@ -136,7 +140,6 @@ export const useCommentsStore = defineStore('comments', () => {
 
       if (response.data) {
         if (response.data.row) {
-          console.log('is here')
           theComment.content = response.data.row.content
           theComment.user = null
           theComment.removed = response.data.row.removed
@@ -161,7 +164,7 @@ export const useCommentsStore = defineStore('comments', () => {
       appendErrorTooltip(errorMessage)
     }
   }
-  const upvoteComment = async (commentId: number): ApiResponse<undefined> => {
+  const upvoteComment = async (commentId: number): RequestResp => {
     try {
       if (!user.value) {
         throw new Error('user is empty')
@@ -177,7 +180,7 @@ export const useCommentsStore = defineStore('comments', () => {
       appendErrorTooltip(errorMessage)
     }
   }
-  const downvoteComment = async (commentId: number): ApiResponse<undefined> => {
+  const downvoteComment = async (commentId: number): RequestResp => {
     try {
       if (!user.value) {
         throw new Error('user is empty')
