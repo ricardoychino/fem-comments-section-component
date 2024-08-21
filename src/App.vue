@@ -4,15 +4,6 @@ import ToastContainer from '@/components/ToastContainer.vue'
 import TestingControls from '@/components/TestingControls.vue'
 import { useLoggedUserStore } from '@/stores/loggedUser'
 import { onMounted } from 'vue'
-
-const { userLogin } = useLoggedUserStore()
-
-onMounted(() => {
-  userLogin({
-    username: 'maxblagun',
-    password: 'user'
-  })
-})
 </script>
 
 <template>
