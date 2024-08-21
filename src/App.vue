@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CommentsSection from '@/components/CommentsSection.vue'
 import ToastContainer from '@/components/ToastContainer.vue'
+import TestingControls from '@/components/TestingControls.vue'
 import { useLoggedUserStore } from '@/stores/loggedUser'
 import { onMounted } from 'vue'
 
@@ -21,6 +22,8 @@ onMounted(() => {
     </div>
 
     <ToastContainer position="bottom-right" />
+
+    <TestingControls />
   </div>
 </template>
 

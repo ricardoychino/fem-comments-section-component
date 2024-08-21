@@ -30,6 +30,7 @@ type DeleteCommentFn = (arg0: { id: number }) => Promise<ApiResponse<Data<Commen
 type CastVoteFn = (arg0: CastVoteArgs) => Promise<ApiResponse<unknown>>
 
 
+
 const createStorageFromArray = (data: Comment[], storage: Storage, currentParent: number = 0) => {
   for (const item of data) {
 
@@ -105,7 +106,9 @@ export const useFakeBackend = () => {
         votes: storageVotes
       }
 
-      createStorageFromArray(initial, storage)
+      const cloneInitial = JSON.parse(JSON.stringify(initial))
+
+      createStorageFromArray(cloneInitial, storage)
 
       updateLocalStorage()
     } else {
@@ -119,6 +122,19 @@ export const useFakeBackend = () => {
     }
 
     nextCommentId.value = Math.max(...storageComment.value.keys()) + 1
+  }
+
+  const reset = () => {
+    localStorage.setItem('list-data', '')
+
+    nextCommentId.value = 0
+    storageComment.value.clear()
+    storageReplies.value.clear()
+    storageResponses.value.clear()
+    storageVotes.value.clear()
+    responseList.value = []
+
+    initialize()
   }
 
   const request = async <T>(fn: Function, ...args: any[]) => {
@@ -329,5 +345,5 @@ export const useFakeBackend = () => {
   // Setup
   initialize()
 
-  return { response, postComment, patchComment, deleteComment, castVote }
+  return { response, postComment, patchComment, deleteComment, castVote, reset }
 }

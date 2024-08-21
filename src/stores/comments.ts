@@ -8,7 +8,7 @@ import type { ApiResponse, Data } from '@/types/Requests'
 
 /* Mock up */
 import { useFakeBackend } from '@/composables/useFakeBackend'
-const { response, postComment, patchComment, deleteComment, castVote } = useFakeBackend()
+const { response, postComment, patchComment, deleteComment, castVote, reset } = useFakeBackend()
 /* ./Mock up */
 
 type RequestResp = Promise<ApiResponse<Data<Comment> | Comment> | unknown>
@@ -136,8 +136,6 @@ export const useCommentsStore = defineStore('comments', () => {
 
       const response = await deleteComment(body)
 
-      console.log(response.data)
-
       if (response.data) {
         if (response.data.row) {
           theComment.content = response.data.row.content
@@ -213,6 +211,12 @@ export const useCommentsStore = defineStore('comments', () => {
   }, { immediate: true })
 
 
+  const resetToInitial = () => {
+    reset()
+    internalCache.value.clear()
+    comments.value = response.value
+  }
+
   return {
     comments,
     itemToRemove,
@@ -222,6 +226,7 @@ export const useCommentsStore = defineStore('comments', () => {
     editComment,
     removeComment,
     upvoteComment,
-    downvoteComment
+    downvoteComment,
+    resetToInitial
   }
 })
