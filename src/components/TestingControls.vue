@@ -51,10 +51,12 @@ const handleUserPick = (username: string) => {
         <ul>
           <li
             v-for="{ avatar, username } in userOptions"
+            :class="{ selected: loggedUser?.username === username }"
             :key="username"
             @click="() => handleUserPick(username)"
           >
-            <UserAvatar :url="avatar" :username="username" size="24px" /> {{ username }}
+            <UserAvatar :url="avatar" :username="username" size="24px" />
+            {{ username }}
           </li>
         </ul>
       </div>
@@ -112,6 +114,10 @@ const handleUserPick = (username: string) => {
         }
         &:hover {
           background-color: $neutral-100;
+        }
+
+        &.selected > :deep(.user-avatar) {
+          border: 2px solid $color-primary;
         }
       }
     }
