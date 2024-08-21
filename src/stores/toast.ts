@@ -1,29 +1,29 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-import type { Tooltip, TooltipThemes } from '@/types/Tooltips.d.ts'
+import type { Toast, ToastThemes } from '@/types/Toasts.d.ts'
 
 type AppendFnOptions = {
   duration?: number,
   closable?: boolean
 }
 
-export const useTooltipsStore = defineStore('tooltips', () => {
-  const internalList = ref<Tooltip[]>([])
+export const useToastsStore = defineStore('toasts', () => {
+  const internalList = ref<Toast[]>([])
   const keyControl = ref(1)
 
-  const tooltips = computed(() => [...internalList.value])
+  const toasts = computed(() => [...internalList.value])
 
   const append = (
-    theme: TooltipThemes = 'neutral',
+    theme: ToastThemes = 'neutral',
     text: string,
     options: AppendFnOptions = { duration: 3000, closable: false }
   ) => {
-    const instance: Tooltip = {
+    const instance: Toast = {
       theme,
       text,
       closable: options.closable || false,
-      key: `tooltip-${keyControl.value}`
+      key: `toast-${keyControl.value}`
     }
 
     const timeout = options.duration || 0 > 0 ? setTimeout(() => {
@@ -41,6 +41,6 @@ export const useTooltipsStore = defineStore('tooltips', () => {
     internalList.value.unshift(instance)
   }
 
-  return { tooltips, append }
+  return { toasts, append }
 })
 

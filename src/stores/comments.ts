@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
 import { useLoggedUserStore } from './loggedUser'
-import { useTooltipsStore } from './tooltips'
+import { useToastsStore } from './toast'
 
 import type { Comment } from '@/types/Comments'
 import type { ApiResponse, Data } from '@/types/Requests'
@@ -19,9 +19,9 @@ export const useCommentsStore = defineStore('comments', () => {
   const userStore = useLoggedUserStore()
   const { loggedUser: user } = storeToRefs(userStore)
 
-  const { append } = useTooltipsStore()
-  const appendSuccessTooltip = (text: string) => { append('success', text, { duration: 5000, closable: true }) }
-  const appendErrorTooltip = (text: string) => { append('danger', text, { duration: 5000, closable: true }) }
+  const { append } = useToastsStore()
+  const appendSuccessToast = (text: string) => { append('success', text, { duration: 5000, closable: true }) }
+  const appendErrorToast = (text: string) => { append('danger', text, { duration: 5000, closable: true }) }
 
   // States
   const comments = ref<Comment[]>(response.value || [])
@@ -56,13 +56,13 @@ export const useCommentsStore = defineStore('comments', () => {
           comments.value.push(response.data.row)
         }
       }
-      appendSuccessTooltip(response.message)
+      appendSuccessToast(response.message)
 
       return response
     } catch (err) {
       const errorMessage: string = (err instanceof Error ? err.message : '')
 
-      appendErrorTooltip(errorMessage)
+      appendErrorToast(errorMessage)
 
       return err
     }
@@ -104,13 +104,13 @@ export const useCommentsStore = defineStore('comments', () => {
       if (response.data) {
         theComment.content = text
       }
-      appendSuccessTooltip(response.message)
+      appendSuccessToast(response.message)
 
       return response
     } catch (err) {
       const errorMessage: string = (err instanceof Error ? err.message : '')
 
-      appendErrorTooltip(errorMessage)
+      appendErrorToast(errorMessage)
     }
   }
   const removeComment = async (): RequestResp => {
@@ -155,13 +155,13 @@ export const useCommentsStore = defineStore('comments', () => {
           internalCache.value.delete(id)
         }
       }
-      appendSuccessTooltip(response.message)
+      appendSuccessToast(response.message)
 
       return response
     } catch (err) {
       const errorMessage: string = (err instanceof Error ? err.message : '')
 
-      appendErrorTooltip(errorMessage)
+      appendErrorToast(errorMessage)
     }
   }
   const upvoteComment = async (commentId: number): RequestResp => {
@@ -171,13 +171,13 @@ export const useCommentsStore = defineStore('comments', () => {
       }
 
       const response = await castVote({commentId, user: user.value.username, type: 'sum'})
-      appendSuccessTooltip(response.message)
+      appendSuccessToast(response.message)
 
       return response.message
     } catch (err) {
       const errorMessage: string = (err instanceof Error ? err.message : '')
 
-      appendErrorTooltip(errorMessage)
+      appendErrorToast(errorMessage)
     }
   }
   const downvoteComment = async (commentId: number): RequestResp => {
@@ -187,13 +187,13 @@ export const useCommentsStore = defineStore('comments', () => {
       }
 
       const response = await castVote({commentId, user: user.value.username, type: 'sub'})
-      appendSuccessTooltip(response.message)
+      appendSuccessToast(response.message)
 
       return response.message
     } catch (err) {
       const errorMessage: string = (err instanceof Error ? err.message : '')
 
-      appendErrorTooltip(errorMessage)
+      appendErrorToast(errorMessage)
     }
   }
 

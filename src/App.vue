@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CommentsSection from '@/components/CommentsSection.vue'
-import TooltipContainer from '@/components/TooltipContainer.vue'
+import ToastContainer from '@/components/ToastContainer.vue'
 import { useLoggedUserStore } from '@/stores/loggedUser'
 import { onMounted } from 'vue'
 
@@ -20,7 +20,7 @@ onMounted(() => {
       <CommentsSection />
     </div>
 
-    <TooltipContainer position="bottom-right" />
+    <ToastContainer position="bottom-right" />
   </div>
 </template>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import TooltipItem from '@/components/TooltipItem.vue'
+import ToastItem from '@/components/ToastItem.vue'
 
-import { useTooltipsStore } from '@/stores/tooltips'
+import { useToastsStore } from '@/stores/toast'
 import { storeToRefs } from 'pinia'
 
 withDefaults(
@@ -18,23 +18,23 @@ withDefaults(
     position: 'top-center'
   }
 )
-const store = useTooltipsStore()
-const { tooltips } = storeToRefs(store)
+const store = useToastsStore()
+const { toasts } = storeToRefs(store)
 </script>
 
 <template>
   <Teleport to="body">
-    <div class="tooltips-container" :data-pos="position">
-      <TransitionGroup name="tooltip-list">
-        <TooltipItem
-          v-for="item in tooltips"
+    <div class="toasts-container" :data-pos="position">
+      <TransitionGroup name="toasts-list">
+        <ToastItem
+          v-for="item in toasts"
           :theme="item.theme"
           :closable="item.closable"
           @close="item.handleClose"
           :key="item.key"
         >
           {{ item.text }}
-        </TooltipItem>
+        </ToastItem>
       </TransitionGroup>
     </div>
   </Teleport>
@@ -60,7 +60,7 @@ const { tooltips } = storeToRefs(store)
   @include right-pos;
   align-items: center;
 }
-.tooltips-container {
+.toasts-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -75,14 +75,14 @@ const { tooltips } = storeToRefs(store)
     flex-direction: column-reverse;
   }
   &[data-pos$='-left'] {
-    .tooltip-list-enter-from,
-    .tooltip-list-leave-to {
+    .toasts-list-enter-from,
+    .toasts-list-leave-to {
       transform: translateX(-30px);
     }
   }
   &[data-pos$='-right'] {
-    .tooltip-list-enter-from,
-    .tooltip-list-leave-to {
+    .toasts-list-enter-from,
+    .toasts-list-leave-to {
       transform: translateX(30px);
     }
   }
@@ -114,7 +114,7 @@ const { tooltips } = storeToRefs(store)
 }
 
 /* Transition mixin (@/assets/css/mixins.scss) */
-@include vue-transition('tooltip-list') {
+@include vue-transition('toasts-list') {
   &__active {
     position: relative;
     opacity: 1;

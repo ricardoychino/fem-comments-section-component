@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { TooltipThemes } from '@/types/Tooltips'
+import type { ToastThemes } from '@/types/Toasts'
 import ButtonIcon from './ButtonIcon.vue'
 
 withDefaults(
   defineProps<{
-    theme?: TooltipThemes
+    theme?: ToastThemes
     closable?: boolean
   }>(),
   {
@@ -19,7 +19,7 @@ defineEmits<{
 </script>
 
 <template>
-  <span class="tooltip" :class="`tooltip-${theme}`">
+  <span class="toast" :class="`toast-${theme}`">
     <slot></slot>
     <button v-if="closable" @click="$emit('close')">
       <ButtonIcon type="close" />
@@ -31,7 +31,7 @@ defineEmits<{
 @mixin shadow($color) {
   box-shadow: 0 1px 10px 0 #{$color}b3;
 }
-.tooltip {
+.toast {
   display: inline-flex;
   align-items: center;
   color: #fff;
