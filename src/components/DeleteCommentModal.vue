@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import ModalBase from '@/components/ModalBase.vue'
+import ButtonWithLoading from '@/components/ButtonWithLoading.vue'
 
 import { useCommentsStore } from '@/stores/comments'
 import { storeToRefs } from 'pinia'
@@ -8,6 +9,13 @@ import { storeToRefs } from 'pinia'
 const store = useCommentsStore()
 const { itemToRemove } = storeToRefs(store)
 const { setItemToRemove, removeComment } = store
+
+const emit = defineEmits<{
+  confirm: []
+  close: []
+}>()
+
+const isLoading = ref(false)
 
 const isOpen = computed({
   get() {
@@ -20,16 +28,15 @@ const isOpen = computed({
   }
 })
 
-const emit = defineEmits<{
-  confirm: []
-  close: []
-}>()
-
 const handleConfirm = async () => {
-  const res = await removeComment()
+  if (!isLoading.value) {
+    isLoading.value = true
+    const res = await removeComment()
 
-  if (res.status === 200) {
-    isOpen.value = false
+    if (res.status === 200) {
+      isOpen.value = false
+      isLoading.value = false
+    }
   }
 }
 const handleCancel = () => {
@@ -51,7 +58,9 @@ const handleCancel = () => {
     <template #footer>
       <div class="delete-modal-actions">
         <button class="neutral" @click="handleCancel">No, cancel</button>
-        <button class="danger" @click="handleConfirm">Yes, delete</button>
+        <ButtonWithLoading class="danger" v-bind:isLoading @click="handleConfirm">
+          Yes, delete
+        </ButtonWithLoading>
       </div>
     </template>
   </ModalBase>

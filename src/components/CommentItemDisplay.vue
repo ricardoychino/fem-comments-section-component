@@ -32,6 +32,8 @@ const editCommentForm = ref<InstanceType<typeof CommentFormEdit> | null>(null)
 const handleEditFormSubmit = async (id: number, text: string) => {
   const res = await editComment(id, text)
 
+  editCommentForm.value?.resetState()
+
   if (res && res.status === 200) {
     isEditing.value = false
     editCommentForm.value?.resetMessage()

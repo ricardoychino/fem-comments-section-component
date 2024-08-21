@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AutoHeightTextArea from '@/components/AutoHeightTextArea.vue'
+import ButtonWithLoading from '@/components/ButtonWithLoading.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -13,22 +14,33 @@ const props = withDefaults(
   }
 )
 
-defineEmits<{
+const emit = defineEmits<{
   submitted: [message: string]
   cancel: []
 }>()
 
 const message = ref<string>(props.value)
+const isLoading = ref(false)
 
+const handleSubmit = () => {
+  if (!isLoading.value) {
+    emit('submitted', message.value)
+    isLoading.value = true
+  }
+}
+
+const resetState = () => {
+  isLoading.value = false
+}
 const resetMessage = () => {
   message.value = props.value
 }
 
-defineExpose({ resetMessage })
+defineExpose({ resetState, resetMessage })
 </script>
 
 <template>
-  <form class="update-comment-form" @submit.prevent="$emit('submitted', message)">
+  <form class="update-comment-form" @submit.prevent="handleSubmit">
     <AutoHeightTextArea
       class="text-field"
       placeholder="Add a comment..."
@@ -38,7 +50,9 @@ defineExpose({ resetMessage })
 
     <div>
       <button type="button" class="neutral flat-btn" @click="$emit('cancel')">Cancel</button>
-      <button type="submit" class="primary">{{ submitButtonText }}</button>
+      <ButtonWithLoading type="submit" class="primary" v-bind:isLoading>
+        {{ submitButtonText }}
+      </ButtonWithLoading>
     </div>
   </form>
 </template>

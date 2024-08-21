@@ -16,6 +16,8 @@ const createCommentForm = ref<InstanceType<typeof CommentFormNew> | null>(null)
 const handleSubmit = async (value: string) => {
   const res = await addComment(value)
 
+  createCommentForm.value?.resetState()
+
   if (res.status === 200) {
     createCommentForm.value?.resetMessage()
   }

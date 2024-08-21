@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import UserAvatar from '@/components/UserAvatar.vue'
+import ButtonWithLoading from '@/components/ButtonWithLoading.vue'
 import AutoHeightTextArea from '@/components/AutoHeightTextArea.vue'
 
 import { useLoggedUserStore } from '@/stores/loggedUser'
@@ -19,13 +20,24 @@ const props = withDefaults(
   }
 )
 
-defineEmits<{
+const emit = defineEmits<{
   submitted: [message: string]
   cancel: []
 }>()
 
 const message = ref<string>(props.value)
+const isLoading = ref(false)
 
+const handleSubmit = () => {
+  if (!isLoading.value) {
+    isLoading.value = true
+    emit('submitted', message.value)
+  }
+}
+
+const resetState = () => {
+  isLoading.value = false
+}
 const resetMessage = () => {
   message.value = ''
 }
@@ -33,11 +45,11 @@ const resetMessage = () => {
 const store = useLoggedUserStore()
 const { loggedUser: userInfo } = storeToRefs(store)
 
-defineExpose({ resetMessage })
+defineExpose({ resetState, resetMessage })
 </script>
 
 <template>
-  <form class="new-comment-form" @submit.prevent="$emit('submitted', message)">
+  <form class="new-comment-form" @submit.prevent="handleSubmit">
     <UserAvatar
       class="user-picture"
       :url="userInfo?.image.png || ''"
@@ -51,7 +63,9 @@ defineExpose({ resetMessage })
       v-model="message"
     />
     <div class="form-actions">
-      <button type="submit" class="primary">{{ submitButtonText }}</button>
+      <ButtonWithLoading type="submit" class="primary" v-bind:isLoading>
+        {{ submitButtonText }}
+      </ButtonWithLoading>
       <button
         v-if="showCancelButton"
         type="button"
