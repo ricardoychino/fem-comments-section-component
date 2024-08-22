@@ -1,106 +1,270 @@
-# Frontend Mentor - Interactive comments section
+# Frontend Mentor - Interactive comments section solution
 
-![Design preview for the Interactive comments section coding challenge](./design/desktop-preview.jpg)
+This is a solution to the [Interactive comments section challenge on Frontend Mentor](https://www.frontendmentor.io/challenges/interactive-comments-section-iG1RugEG9). Frontend Mentor challenges help you improve your coding skills by building realistic projects.
 
-## Welcome! 👋
+## Table of contents
 
-Thanks for checking out this front-end coding challenge.
+- [Overview](#overview)
+  - [The challenge](#the-challenge)
+  - [Bonus features](#bonus-features)
+  - [Links](#links)
+- [My process](#my-process)
+  - [Built with](#built-with)
+  - [What I'm proud & What I learned](#what-im-proud--what-i-learned)
+    - [A better use for SASS/SCSS](#a-better-use-for-sassscss)
+    - [Use of slots to avoid repeating tons of code](#use-of-slots-to-avoid-repeating-tons-of-code)
+    - [Effective use of Grid layout for responsiveness](#effective-use-of-grid-layout-for-responsiveness)
+    - [Implementation and use of some smaller feats](#implementation-and-use-of-some-smaller-feats)
+    - [The "Backend"](#the-backend)
+  - [Continued development](#continued-development)
+  - [Useful resources](#useful-resources)
+- [Author](#author)
+- [Acknowledgments](#acknowledgments)
 
-[Frontend Mentor](https://www.frontendmentor.io) challenges help you improve your coding skills by building realistic projects.
+**Note: Delete this note and update the table of contents based on what sections you keep.**
 
-**To do this challenge, you need a strong understanding of HTML, CSS and JavaScript.**
+## Overview
 
-## The challenge
+![](./screenshots/sample.png)
 
-Your challenge is to build out this interactive comments section and get it looking as close to the design as possible.
+### The challenge
 
-You can use any tools you like to help you complete the challenge. So if you've got something you'd like to practice, feel free to give it a go.
+Users should be able to:
 
-We provide the data in a local `data.json` file, so use that to populate the content on the first load. If you want to take it up a notch, feel free to build this as a full-stack CRUD application!
+- :white_check_mark: View the optimal layout for the app depending on their device's screen size
+- :white_check_mark: See hover states for all interactive elements on the page
+- :white_check_mark: Create, Read, Update, and Delete comments and replies
+- :white_check_mark: Upvote and downvote comments
+- :white_check_mark: **Bonus**: If you're building a purely front-end project, use `localStorage` to save the current state in the browser that persists when the browser is refreshed.
+- :white_check_mark: **Bonus**: Instead of using the `createdAt` strings from the `data.json` file, try using timestamps and dynamically track the time since the comment or reply was posted.
 
-Your users should be able to:
+### Bonus Features
+#### Controller for testing
 
-- View the optimal layout for the app depending on their device's screen size
-- See hover states for all interactive elements on the page
-- Create, Read, Update, and Delete comments and replies
-- Upvote and downvote comments
-- **Bonus**: If you're building a purely front-end project, use `localStorage` to save the current state in the browser that persists when the browser is refreshed.
-- **Bonus**: Instead of using the `createdAt` strings from the `data.json` file, try using timestamps and dynamically track the time since the comment or reply was posted.
+![](./screenshots/testingcontrols.png)
 
-Want some support on the challenge? [Join our community](https://www.frontendmentor.io/community) and ask questions in the **#help** channel.
+To make the tests more easier, I added a component `TestingControls`, which you can use to:
+- Reset the comments list to the initial (provided by Frontend Mentor in project files)
+- Alter the current "logged" (active) user who perform the actions
 
-### Expected behaviour
+These actions comes in handy to test (or just play with the solution) in various ways.
 
-- First-level comments should be ordered by their score, whereas nested replies are ordered by time added.
-- Replying to a comment adds the new reply to the bottom of the nested replies within that comment.
-- A confirmation modal should pop up before a comment or reply is deleted.
-- Adding a new comment or reply uses the `currentUser` object from within the `data.json` file.
-- You can only edit or delete your own comments and replies.
+#### Toasts for visual feedback
 
-## Where to find everything
+![](./screenshots/toast.png)
+![](./screenshots/errortoast.png)
 
-Your task is to build out the project to the designs inside the `/design` folder. You will find both a mobile and a desktop version of the design. 
+After performing actions like submitting new comment, editing, deleting or voting, we need to know if the action was executed or if some kind of error happened. The toasts were implemented and added to give us these feedbacks!
 
-The designs are in JPG static format. Using JPGs will mean that you'll need to use your best judgment for styles such as `font-size`, `padding` and `margin`. 
 
-If you would like the design files (we provide Sketch & Figma versions) to inspect the design in more detail, you can [subscribe as a PRO member](https://www.frontendmentor.io/pro).
+### Links
 
-You will find all the required assets in the `/images` folder. The assets are already optimized.
+- Solution URL: [Add solution URL here](https://your-solution-url.com)
+- Live Site URL: [Link](https://fem-comments-section-ryc.netlify.app/)
+- Repository: [Link](https://github.com/ricardoychino/fem-comments-section-component)
 
-There is also a `style-guide.md` file containing the information you'll need, such as color palette and fonts.
+## My process
 
-## Building your project
+### Built with
 
-Feel free to use any workflow that you feel comfortable with. Below is a suggested process, but do not feel like you need to follow these steps:
+- TypeScript
+- SCSS
+- Flexbox + Grid
+- Mobile-first workflow
+- [Vue 3](https://vuejs.org/) w/ Composition API
+- [Vue Transitions](https://vuejs.org/guide/built-ins/transition.html#transition)
+- Pinia
 
-1. Initialize your project as a public repository on [GitHub](https://github.com/). Creating a repo will make it easier to share your code with the community if you need help. If you're not sure how to do this, [have a read-through of this Try Git resource](https://try.github.io/).
-2. Configure your repository to publish your code to a web address. This will also be useful if you need some help during a challenge as you can share the URL for your project with your repo URL. There are a number of ways to do this, and we provide some recommendations below.
-3. Look through the designs to start planning out how you'll tackle the project. This step is crucial to help you think ahead for CSS classes to create reusable styles.
-4. Before adding any styles, structure your content with HTML. Writing your HTML first can help focus your attention on creating well-structured content.
-5. Write out the base styles for your project, including general content styles, such as `font-family` and `font-size`.
-6. Start adding styles to the top of the page and work down. Only move on to the next section once you're happy you've completed the area you're working on.
 
-## Deploying your project
+## WHAT I'M PROUD & WHAT I LEARNED
 
-As mentioned above, there are many ways to host your project for free. Our recommended hosts are:
+### A better use for SASS/SCSS
 
-- [GitHub Pages](https://pages.github.com/)
-- [Vercel](https://vercel.com/)
-- [Netlify](https://www.netlify.com/)
+There are two main features that I'm proud of the use of SASS/SCSS in this project:
 
-You can host your site using one of these solutions or any of our other trusted providers. [Read more about our recommended and trusted hosts](https://medium.com/frontend-mentor/frontend-mentor-trusted-hosting-providers-bf000dfebe).
+1. The use of mixins and variables to create themes for buttons. In other projects, I created similar variety of button styles and themes, but it was pretty convoluted and verbous. The use of mixins made it more simple to add new themes without the need to repeat too much code
 
-## Create a custom `README.md`
+```css
+/* variables.scss */
+$theme-colors: (
+  "neutral": $neutral-700,
+  "primary": $color-primary,
+  "primary-inverse": $color-primary-soft,
+  "danger": $color-danger,
+  "success": $color-success,
+);
+$theme-colors-soft: (
+  "neutral": $neutral-400,
+  "primary": $color-primary-soft,
+  "primary-inverse": $color-primary,
+  "danger": $color-danger-soft,
+  "success": $color-success-soft
+);
 
-We strongly recommend overwriting this `README.md` with a custom one. We've provided a template inside the [`README-template.md`](./README-template.md) file in this starter code.
+/* Mixin for buttons */
+@mixin btn-theme($color: "neutral") {
+  color: $neutral-000;
+  background-color: map.get($theme-colors, $color);
 
-The template provides a guide for what to add. A custom `README` will help you explain your project and reflect on your learnings. Please feel free to edit our template as much as you like.
+  svg {
+    fill: $neutral-000;
+  }
 
-Once you've added your information to the template, delete this file and rename the `README-template.md` file to `README.md`. That will make it show up as your repository's README file.
+  &:hover {
+    background-color: map.get($theme-colors-soft, $color)
+  }
 
-## Submitting your solution
+  &.flat-btn {
+    color: map.get($theme-colors, $color);
+    background-color: transparent;
+    text-transform: unset;
+    font-weight: 500;
+    padding: 5px 10px;
 
-Submit your solution on the platform for the rest of the community to see. Follow our ["Complete guide to submitting solutions"](https://medium.com/frontend-mentor/a-complete-guide-to-submitting-solutions-on-frontend-mentor-ac6384162248) for tips on how to do this.
+    svg {
+      fill: map.get($theme-colors, $color);
+    }
 
-Remember, if you're looking for feedback on your solution, be sure to ask questions when submitting it. The more specific and detailed you are with your questions, the higher the chance you'll get valuable feedback from the community.
+    &:hover {
+      // background-color: #{$color}33;
+      color: map.get($theme-colors-soft, $color);
 
-## Sharing your solution
+      svg {
+        fill: map.get($theme-colors-soft, $color);
+      }
+    }
+  }
+}
 
-There are multiple places you can share your solution:
+/* To declare a theme */
+button.success {
+  @include btn-theme($color: "success");
+}
 
-1. Share your solution page in the **#finished-projects** channel of the [community](https://www.frontendmentor.io/community). 
-2. Tweet [@frontendmentor](https://twitter.com/frontendmentor) and mention **@frontendmentor**, including the repo and live URLs in the tweet. We'd love to take a look at what you've built and help share it around.
-3. Share your solution on other social channels like LinkedIn.
-4. Blog about your experience building your project. Writing about your workflow, technical choices, and talking through your code is a brilliant way to reinforce what you've learned. Great platforms to write on are [dev.to](https://dev.to/), [Hashnode](https://hashnode.com/), and [CodeNewbie](https://community.codenewbie.org/).
+```
 
-We provide templates to help you share your solution once you've submitted it on the platform. Please do edit them and include specific questions when you're looking for feedback. 
+2. Another use of Mixins that I never tought of before is to declare the Vue transition's CSS classes. Usually I just code them once in projects so I didn't mind, but it is quite a chunk of code to write. To simplify it a little, created the mixin:
 
-The more specific you are with your questions the more likely it is that another member of the community will give you feedback.
+```css
+@mixin vue-transition($name) {
 
-## Got feedback for us?
+  .#{$name} {
+    /*
+      Use with this format:
 
-We love receiving feedback! We're always looking to improve our challenges and our platform. So if you have anything you'd like to mention, please email hi[at]frontendmentor[dot]io.
+      @include vue-transition('name') {
+        &__active { ... }         // CSS for when visible
+        &__inactive { ... }       // CSS for when hidden
+        &__transition-in { ... }  // CSS transition when becoming visible
+        &__transition-out { ... } // CSS transition when becoming hidden
+      }
+    */
+    @content;
 
-This challenge is completely free. Please share it with anyone who will find it useful for practice.
+    &-enter {
+      &-from {
+        @extend .#{$name}__inactive;
+      }
+      &-active {
+        @extend .#{$name}__transition-in;
+      }
+      &-to {
+        @extend .#{$name}__active;
+      }
+    }
+    &-leave {
+      &-from {
+        @extend .#{$name}__active;
+      }
+      &-active {
+        @extend .#{$name}__transition-out;
+      }
+      &-to {
+        @extend .#{$name}__inactive;
+      }
+    }
+  }
+}
+```
 
-**Have fun building!** 🚀
+and then we just need to declare, such as:
+
+
+```css
+@include vue-transition('modal') {
+  &__active {
+    opacity: 1;
+  }
+  &__inactive {
+    opacity: 0;
+
+    .modal-dialog {
+      transform: translateY(-40px);
+    }
+  }
+  &__transition-in,
+  &__transition-out {
+    transition: all 0.2s linear;
+  }
+}
+```
+
+Maybe not the prettiest, but avoided A LOT of repetition on this solution.
+
+### Use of `slots` to avoid repeating tons of code
+
+Created some layout components, such as `ModalBase`, `CommentItemLayout` and `ButtonWithLoading`.
+
+`ModalBase` is used just once, in the Modal to delete comment, but writing it as a template prepares for *possible* future modal implementations.
+
+`CommentItemLayout` have only two uses, one with empty/deleted comment, and another with the usual ones. But the idea here is to avoid writing tons of `v-if/v-else` and keep the code a little bit cleaner.
+
+`ButtonWithLoading` just saved me from writing the loading component and the `v-show` tons of times.
+
+
+### Effective use of Grid layout for responsiveness
+
+I never used Grid layout in any project before. I usually go with the flexbox. And to tell the truth, I started doing the changes for desktop and mobile layouts changing the properties `order` according to the viewport size, but I realized that it is an ugly code, and the use of `grid-template-areas` and `grid-area` would be so much better. And it paid off. Much more succint and efficient way to handle the design positioning changes.
+
+### Implementation and use of some "smaller" feats
+
+There are some small details or invisible features that improves the overall experience or the performance of the application.
+
+- Dynamic load of SVG icons, in a single component. Credits to [this solution][1]
+
+- Textarea with auto-height (Credits to Vue core team)
+
+- Toasts (with custom timeout, closable or not and themes)
+
+- The loading on buttons for visual feedback
+
+
+### The "Backend"
+
+To simulate the functional CRUD, even if using the local storage, I wanted to keep it separated from the Pinia store. This is because it will be easier to change to fetching methods if it becomes available later, instead of refactoring or rewriting the whole store from scratch. The result is the **composable** `useFakeBackend.ts`, which honestly I'm **not** so much proud of writing 350 lines of code. Possibly is not the most performant too, but I'm satisfied with the results.
+
+The use of random timeouts and `Promises` to simulate API responses was pretty satisfying. I was able to do some TS typing too, even if I don't think it was well done. But in the end, it fulfilled its purpose.
+
+
+## Continued development
+
+The complex typing such as https requests responses are something that I need to look further. I was able to *(almost)* get it fully error-free, but the solution wasn't pretty. I believe that there are better ways to get the job done.
+
+The try/catch, specifically the typing of catch arguments made me suffer this time. That another topic to look further, possibly starting with [this][2]
+
+### Useful resources
+
+
+
+- [Tuts Insider's SASS reference](https://www.tutsinsider.com/sass/sass-content-rule/) - I believe this one is more detailed than the official documentation, so it could be a nice resource
+
+## Author
+
+- Frontend Mentor - [@ricardoychino](https://www.frontendmentor.io/profile/ricardoychino)
+
+## Acknowledgments
+
+- [Monica K's solution to load SVGs dynamically (and asynchronously!)][1] - This is basically the code of the component `ButtonIcon`. The perk here is that everytime I needed to add a new type of icon, I just needed to add the string in the prop definition type, and add the file with the proper name. **This link is gold**
+
+[1]: https://mkay11.medium.com/heres-a-simple-solution-to-incorporate-inline-svgs-in-vue-vite-da5897a480f7
+[2]: https://www.dhiwise.com/post/typescript-error-handling-pitfalls-and-how-to-avoid-them
