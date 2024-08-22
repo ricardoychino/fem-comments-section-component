@@ -59,7 +59,7 @@ After performing actions like submitting new comment, editing, deleting or votin
 
 ### Links
 
-- Solution URL: [Add solution URL here](https://your-solution-url.com)
+- Solution URL: [Link](https://www.frontendmentor.io/solutions/comments-section-w-vue-3-pinia-ts-scss-toasts-HL1iUtXZuz)
 - Live Site URL: [Link](https://fem-comments-section-ryc.netlify.app/)
 - Repository: [Link](https://github.com/ricardoychino/fem-comments-section-component)
 
