@@ -54,7 +54,7 @@ const handleReplySubmit = async (message: string) => {
 <template>
   <CommentItemLayout :class="{ 'is-editing': isEditing }">
     <template #header>
-      <CommentItemHeader :user="data.user" v-bind:isSelf />
+      <CommentItemHeader :user="data.user" v-bind:isSelf :time="data.createdAt" />
     </template>
 
     <template #aside-left>

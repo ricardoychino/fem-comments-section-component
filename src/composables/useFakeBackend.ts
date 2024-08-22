@@ -174,7 +174,7 @@ export const useFakeBackend = () => {
         id: nextCommentId.value,
         content,
         user,
-        createdAt: Date.now(),
+        createdAt: Math.floor(Date.now() / 1000),
         score: 0
       }
 
